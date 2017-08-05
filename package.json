@@ -1,6 +1,6 @@
 {
   "name": "wobble",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Wobble is a tiny spring simulation library based on the equations of motion governing damped harmonic oscillators.",
   "repository": "https://github.com/skevy/wobble",
   "author": "Adam Miskiewicz <adam@sk3vy.com>",
@@ -15,6 +15,9 @@
     "dist": "concurrently \"yarn dist-es\" \"yarn dist-cjs\" \"yarn dist-browser\"",
     "prepublish": "yarn run dist"
   },
+  "files": [
+    "dist"
+  ],
   "jest": {
     "setupFiles": [
       "./jest/rAF.js"
