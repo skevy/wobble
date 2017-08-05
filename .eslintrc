@@ -1,0 +1,27 @@
+{
+  "extends": [
+    "plugin:flowtype/recommended",
+    "prettier",
+    "prettier/flowtype",
+    "prettier/react"
+  ],
+  "plugins": [
+    "import",
+    "flowtype",
+    "prettier"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 2017,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "env": {
+    "es6": true,
+    "node": true
+  },
+  "rules": {
+    "prettier/prettier": "error"
+  }
+}

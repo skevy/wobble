@@ -1,0 +1,55 @@
+{
+  "name": "wobble",
+  "version": "0.0.1",
+  "description": "Wobble is a tiny spring simulation library based on the equations of motion governing damped harmonic oscillators.",
+  "repository": "https://github.com/skevy/wobble",
+  "author": "Adam Miskiewicz <adam@sk3vy.com>",
+  "license": "MIT",
+  "main": "dist/wobble.cjs.js",
+  "module": "dist/wobble.es.js",
+  "browser": "dist/wobble.browser.js",
+  "scripts": {
+    "dist-es": "NODE_ENV=production rollup -c --format es --output dist/wobble.es.js",
+    "dist-cjs": "NODE_ENV=production rollup -c --format cjs --output dist/wobble.cjs.js",
+    "dist-browser": "NODE_ENV=production rollup -c --format iife --output dist/wobble.browser.js",
+    "dist": "concurrently \"yarn dist-es\" \"yarn dist-cjs\" \"yarn dist-browser\"",
+    "prepublish": "yarn run dist"
+  },
+  "jest": {
+    "setupFiles": [
+      "./jest/rAF.js"
+    ],
+    "modulePathIgnorePatterns": [
+      "<rootDir>/build/",
+      "<rootDir>/dist/"
+    ],
+    "timers": "fake"
+  },
+  "devDependencies": {
+    "babel-eslint": "^7.2.3",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-stage-0": "^6.24.1",
+    "concurrently": "^3.5.0",
+    "eslint": "^4.4.0",
+    "eslint-config-prettier": "^2.3.0",
+    "eslint-plugin-flowtype": "^2.35.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-prettier": "^2.1.2",
+    "flow-bin": "^0.52.0",
+    "flow-typed": "^2.1.5",
+    "jest": "^20.0.4",
+    "prettier": "^1.5.3",
+    "rimraf": "^2.6.1",
+    "rollup": "^0.45.2",
+    "rollup-plugin-babel": "^2.7.1",
+    "rollup-plugin-commonjs": "^8.1.0",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-uglify": "^2.0.1",
+    "uglify-es": "^3.0.27"
+  },
+  "dependencies": {
+    "invariant": "^2.2.2"
+  }
+}
