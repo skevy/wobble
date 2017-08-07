@@ -50,7 +50,7 @@ export class Spring {
   constructor(config: PartialSpringConfig) {
     this._config = {
       fromValue: withDefault(config.fromValue, 0),
-      toValue: withDefault(config.toValue, 1),
+      toValue: withDefault(config.toValue, 0),
       stiffness: withDefault(config.stiffness, 100),
       damping: withDefault(config.damping, 10),
       mass: withDefault(config.mass, 1),
@@ -106,6 +106,31 @@ export class Spring {
 
   get normalizedVelocity(): number {
     return this._currentNormalizedVelocity;
+  }
+
+  /**
+   * Updates the spring config with the given values.  Values not explicitly
+   * supplied will be reused from the existing config.
+   */
+  updateConfig(updatedConfig: PartialSpringConfig): void {
+    // `spring.start()` will reset the time to 0.  Record its current position
+    // before that happens.
+    this._config.fromValue = this.position;
+
+    this._config = {
+      ...this._config,
+      ...updatedConfig
+    };
+
+    const {
+      fromValue,
+      toValue,
+      initialVelocity,
+    } = this._config;
+
+    if (fromValue !== toValue || initialVelocity !== 0) {
+      this.start();
+    }
   }
 
   onUpdate(listener: SpringListenerFn): Spring {

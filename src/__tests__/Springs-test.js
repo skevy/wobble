@@ -7,6 +7,8 @@ import { Spring } from "../";
 describe("Spring", () => {
   it("successfully animates a spring", () => {
     const spring = new Spring({
+      fromValue: 0,
+      toValue: 1,
       stiffness: 1000,
       damping: 500,
       mass: 3
