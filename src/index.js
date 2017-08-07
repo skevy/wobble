@@ -47,7 +47,7 @@ export class Spring {
 
   _oscillationVelocityPairs = [];
 
-  constructor(config: PartialSpringConfig) {
+  constructor(config: PartialSpringConfig = {}) {
     this._config = {
       fromValue: withDefault(config.fromValue, 0),
       toValue: withDefault(config.toValue, 0),
