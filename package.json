@@ -51,8 +51,5 @@
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-uglify": "^2.0.1",
     "uglify-es": "^3.0.27"
-  },
-  "dependencies": {
-    "invariant": "^2.2.2"
   }
 }

@@ -2,7 +2,7 @@
  * @flow
  */
 
-import invariant from "invariant";
+import { invariant, withDefault } from "./utils";
 
 /**
  * Implements a spring physics simulation based on the equations behind
@@ -28,12 +28,6 @@ type SpringListener = {
   onUpdate?: SpringListenerFn,
   onSpringAtRest?: SpringListenerFn
 };
-
-function withDefault<X>(maybeValue: ?X, defaultVal: X): X {
-  return typeof maybeValue !== "undefined"
-    ? ((maybeValue: any): X)
-    : defaultVal;
-}
 
 export class Spring {
   static MAX_DELTA_TIME_MS = 1 / 60 * 1000 * 4; // advance 4 frames at max
