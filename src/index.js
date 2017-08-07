@@ -10,19 +10,19 @@ import { invariant, withDefault } from "./utils";
  */
 
 type SpringConfig = {
-  fromValue?: number, // Starting value of the animation.
-  toValue?: number, // Ending value of the animation.
-  stiffness?: number, // The spring stiffness coefficient.
-  damping?: number, // Defines how the spring’s motion should be damped due to the forces of friction.
-  mass?: number, // The mass of the object attached to the end of the spring.
-  initialVelocity?: number, // The initial velocity (in px/ms) of the object attached to the spring.
-  allowsOverdamping?: number,
-  overshootClamping?: boolean,
-  restVelocityThreshold?: number,
-  restDisplacementThreshold?: number
+  fromValue: number, // Starting value of the animation.
+  toValue: number, // Ending value of the animation.
+  stiffness: number, // The spring stiffness coefficient.
+  damping: number, // Defines how the spring’s motion should be damped due to the forces of friction.
+  mass: number, // The mass of the object attached to the end of the spring.
+  initialVelocity: number, // The initial velocity (in px/ms) of the object attached to the spring.
+  allowsOverdamping: boolean,
+  overshootClamping: boolean,
+  restVelocityThreshold: number,
+  restDisplacementThreshold: number
 };
 
-type ConcreteSpringConfig = $ObjMap<SpringConfig, <V>(V) => $NonMaybeType<V>>;
+type PartialSpringConfig = $Shape<SpringConfig>;
 
 type SpringListenerFn = (spring: Spring) => void;
 type SpringListener = {
@@ -33,7 +33,7 @@ type SpringListener = {
 export class Spring {
   static MAX_DELTA_TIME_MS = 1 / 60 * 1000 * 4; // advance 4 frames at max
 
-  _config: ConcreteSpringConfig;
+  _config: SpringConfig;
   _listeners: Array<SpringListener> = [];
   _currentAnimationStep: number; // current requestAnimationFrame
 
@@ -47,7 +47,7 @@ export class Spring {
 
   _oscillationVelocityPairs = [];
 
-  constructor(config: SpringConfig) {
+  constructor(config: PartialSpringConfig) {
     this._config = {
       fromValue: withDefault(config.fromValue, 0),
       toValue: withDefault(config.toValue, 1),
