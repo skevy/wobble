@@ -27,7 +27,7 @@ type PartialSpringConfig = $Shape<SpringConfig>;
 type SpringListenerFn = (spring: Spring) => void;
 type SpringListener = {
   onUpdate?: SpringListenerFn,
-  onSpringAtRest?: SpringListenerFn
+  onAtRest?: SpringListenerFn
 };
 
 export class Spring {
@@ -113,8 +113,8 @@ export class Spring {
     return this;
   }
 
-  onSpringAtRest(listener: SpringListenerFn): Spring {
-    this._listeners.push({ onSpringAtRest: listener });
+  onAtRest(listener: SpringListenerFn): Spring {
+    this._listeners.push({ onAtRest: listener });
     return this;
   }
 
@@ -249,7 +249,7 @@ export class Spring {
       }
 
       this._springAtRest = true;
-      this._notifyListeners("onSpringAtRest");
+      this._notifyListeners("onAtRest");
       return;
     }
   }
