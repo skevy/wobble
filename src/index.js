@@ -16,6 +16,7 @@ type SpringConfig = {
   damping?: number, // Defines how the spring’s motion should be damped due to the forces of friction.
   mass?: number, // The mass of the object attached to the end of the spring.
   initialVelocity?: number, // The initial velocity (in px/ms) of the object attached to the spring.
+  allowsOverdamping?: number,
   overshootClamping?: boolean,
   restVelocityThreshold?: number,
   restDisplacementThreshold?: number
@@ -36,13 +37,15 @@ export class Spring {
   _listeners: Array<SpringListener> = [];
   _currentAnimationStep: number; // current requestAnimationFrame
 
-  _currentTime: number = 0; // Current timestamp of animation in ms
-  _springTime: number = 0; // Current timestamp along the spring curve in sec
+  _currentTime: number = 0; // Current timestamp of animation in ms (real time)
+  _springTime: number = 0; // Current time along the spring curve in ms (zero-based)
   _isAnimating: boolean = false;
 
-  _currentSpringValue: number = 0; // the current value of the spring
-  _currentSpringVelocity: number = 0; // the current velocity of the spring
+  _currentNormalizedPosition: number = 0; // the current value of the spring
+  _currentNormalizedVelocity: number = 0; // the current velocity of the spring
   _springAtRest: boolean = true;
+
+  _oscillationVelocityPairs = [];
 
   constructor(config: SpringConfig) {
     this._config = {
@@ -51,17 +54,22 @@ export class Spring {
       stiffness: withDefault(config.stiffness, 100),
       damping: withDefault(config.damping, 10),
       mass: withDefault(config.mass, 1),
-      initialVelocity: withDefault(config.initialVelocity, 0) * 1000,
+      initialVelocity: 0,
       overshootClamping: withDefault(config.overshootClamping, false),
+      allowsOverdamping: withDefault(config.allowsOverdamping, false),
       restVelocityThreshold: withDefault(config.restVelocityThreshold, 0.001),
       restDisplacementThreshold: withDefault(
         config.restDisplacementThreshold,
         0.001
       )
     };
+    this._config.initialVelocity = this._normalizeVelocity(
+      withDefault(config.initialVelocity, 0)
+    );
   }
 
   start() {
+    this._springTime = 0.0;
     this._springAtRest = false;
     this._isAnimating = true;
     this._currentAnimationStep = requestAnimationFrame((t: number) => {
@@ -80,12 +88,24 @@ export class Spring {
     }
   }
 
-  get currentValue(): number {
-    return this._currentSpringValue;
+  get position(): number {
+    // Lerp the value + velocity over the animation's start/end values
+    const scaleFactor = this._config.toValue - this._config.fromValue;
+    return this._config.fromValue + this.normalizedPosition * scaleFactor;
   }
 
-  get currentVelocity(): number {
-    return this._currentSpringVelocity / 1000; // give velocity in px/ms;
+  get velocity(): number {
+    // invert and then scale the velocity over the animation's start/end values
+    const scaleFactor = this._config.toValue - this._config.fromValue;
+    return this.normalizedVelocity * scaleFactor; // give velocity in px/ms;
+  }
+
+  get normalizedPosition(): number {
+    return this._currentNormalizedPosition;
+  }
+
+  get normalizedVelocity(): number {
+    return this._currentNormalizedVelocity;
   }
 
   onUpdate(listener: SpringListenerFn): Spring {
@@ -113,7 +133,7 @@ export class Spring {
     }
 
     const deltaTime = timestamp - this._currentTime;
-    this._evaluateSpringAtTime(deltaTime);
+    this._evaluateSpring(deltaTime);
 
     this._currentTime = timestamp;
     if (this._isAnimating && !this._springAtRest) {
@@ -123,7 +143,7 @@ export class Spring {
     }
   }
 
-  _evaluateSpringAtTime(deltaTime: number) {
+  _evaluateSpring(deltaTime: number) {
     // If for some reason we lost a lot of frames (e.g. process large payload or
     // stopped in the debugger), we only advance by 4 frames worth of
     // computation and will continue on the next frame. It's better to have it
@@ -131,23 +151,29 @@ export class Spring {
     if (deltaTime > Spring.MAX_DELTA_TIME_MS) {
       deltaTime = Spring.MAX_DELTA_TIME_MS;
     }
-    this._springTime += deltaTime / 1000;
+    this._springTime += deltaTime;
 
     const c = this._config.damping;
     const m = this._config.mass;
     const k = this._config.stiffness;
-    const v0 = this._config.initialVelocity;
     const fromValue = this._config.fromValue;
     const toValue = this._config.toValue;
+    // invert the initial velocity, as we expect our spring has an x0 of 1
+    const v0 = -this._config.initialVelocity;
 
     invariant(m > 0, "Mass value must be greater than 0");
     invariant(k > 0, "Stiffness value must be greater than 0");
     invariant(c > 0, "Damping value must be greater than 0");
 
-    const zeta = c / (2 * Math.sqrt(k * m)); // damping ratio
-    const omega0 = Math.sqrt(k / m); // undamped angular frequency of the oscillator
+    let zeta = c / (2 * Math.sqrt(k * m)); // damping ratio (dimensionless)
+    const omega0 = Math.sqrt(k / m) / 1000; // undamped angular frequency of the oscillator (rad/ms)
     const omega1 = omega0 * Math.sqrt(1.0 - zeta * zeta); // exponential decay
+    const omega2 = omega0 * Math.sqrt(zeta * zeta - 1.0); // frequency of damped oscillation
     const x0 = 1; // calculate the oscillation from x0 = 1 to x = 0
+
+    if (zeta > 1 && !this._config.allowsOverdamping) {
+      zeta = 1;
+    }
 
     let oscillation = 0.0;
     let velocity = 0.0;
@@ -156,33 +182,51 @@ export class Spring {
       // Under damped
       const envelope = Math.exp(-zeta * omega0 * t);
       oscillation =
+        1 -
         envelope *
-        ((v0 + zeta * omega0 * x0) / omega1 * Math.sin(omega1 * t) +
-          x0 * Math.cos(omega1 * t));
+          ((v0 + zeta * omega0 * x0) / omega1 * Math.sin(omega1 * t) +
+            x0 * Math.cos(omega1 * t));
       // This looks crazy -- it's actually just the derivative of the
       // oscillation function
       velocity =
-        envelope *
-          (Math.cos(omega1 * t) * (v0 + zeta * omega0 * x0) -
-            omega1 * x0 * Math.sin(omega1 * t)) -
         zeta *
           omega0 *
           envelope *
           (Math.sin(omega1 * t) * (v0 + zeta * omega0 * x0) / omega1 +
-            x0 * Math.cos(omega1 * t));
-    } else {
+            x0 * Math.cos(omega1 * t)) -
+        envelope *
+          (Math.cos(omega1 * t) * (v0 + zeta * omega0 * x0) -
+            omega1 * x0 * Math.sin(omega1 * t));
+    } else if (zeta === 1) {
       // Critically damped
-      let envelope = Math.exp(-omega0 * t);
-      oscillation = envelope * (x0 + (v0 + omega0 * x0) * t);
-      velocity = envelope * (t * v0 * omega0 - t * x0 * (omega0 * omega0) + v0);
+      const envelope = Math.exp(-omega0 * t);
+      oscillation = 1 - envelope * (x0 + (v0 + omega0 * x0) * t);
+      velocity =
+        envelope * (v0 * (t * omega0 - 1) + t * x0 * (omega0 * omega0));
+    } else {
+      // Overdamped
+      const envelope = Math.exp(-zeta * omega0 * t);
+      oscillation =
+        1 -
+        envelope *
+          ((v0 + zeta * omega0 * x0) * Math.sinh(omega2 * t) +
+            omega2 * x0 * Math.cosh(omega2 * t)) /
+          omega2;
+      velocity =
+        envelope *
+          zeta *
+          omega0 *
+          (Math.sinh(omega2 * t) * (v0 + zeta * omega0 * x0) +
+            x0 * omega2 * Math.cosh(omega2 * t)) /
+          omega2 -
+        envelope *
+          (omega2 * Math.cosh(omega2 * t) * (v0 + zeta * omega0 * x0) +
+            omega2 * omega2 * x0 * Math.sinh(omega2 * t)) /
+          omega2;
     }
 
-    const delta = toValue - fromValue;
-    const fraction = 1 - oscillation;
-    const newValue = fromValue + fraction * delta;
-
-    this._currentSpringValue = newValue;
-    this._currentSpringVelocity = velocity;
+    this._currentNormalizedPosition = oscillation;
+    this._currentNormalizedVelocity = velocity;
 
     this._notifyListeners("onUpdate");
     if (!this._isAnimating) {
@@ -193,10 +237,14 @@ export class Spring {
     // If the Spring is overshooting (when overshoot clamping is on),
     // or if the spring is at rest (based on the thresholds set in the config),
     // stop the animation
-    if (this._isSpringOvershooting() || this._isSpringAtRest()) {
+    if (
+      this._isSpringOvershooting(oscillation) ||
+      this._isSpringAtRest(oscillation, velocity)
+    ) {
       if (k !== 0) {
         // Ensure that we end up with a round value
-        this._currentSpringValue = toValue;
+        this._currentNormalizedPosition = 1;
+        this._currentNormalizedVelocity = 0;
         this._notifyListeners("onUpdate");
       }
 
@@ -206,32 +254,30 @@ export class Spring {
     }
   }
 
-  _isSpringOvershooting() {
-    const { stiffness, fromValue, toValue, overshootClamping } = this._config;
+  _isSpringOvershooting(oscillation: number) {
+    const { stiffness, overshootClamping } = this._config;
     let isOvershooting = false;
     if (overshootClamping && stiffness !== 0) {
-      if (fromValue < toValue) {
-        isOvershooting = this._currentSpringValue > toValue;
-      } else {
-        isOvershooting = this._currentSpringValue < toValue;
-      }
+      isOvershooting = oscillation > 1;
     }
     return isOvershooting;
   }
 
-  _isSpringAtRest() {
+  _isSpringAtRest(oscillation: number, velocity: number) {
     const {
       stiffness,
-      toValue,
       restDisplacementThreshold,
       restVelocityThreshold
     } = this._config;
 
-    const isVelocity =
-      Math.abs(this._currentSpringVelocity) <= restVelocityThreshold;
+    const isVelocity = Math.abs(velocity) <= restVelocityThreshold;
     const isDisplacement =
-      stiffness !== 0 &&
-      Math.abs(toValue - this._currentSpringValue) <= restDisplacementThreshold;
+      stiffness !== 0 && Math.abs(1 - oscillation) <= restDisplacementThreshold;
     return isDisplacement && isVelocity;
+  }
+
+  _normalizeVelocity(velocity: number): number {
+    const scaleFactor = this._config.toValue - this._config.fromValue;
+    return Math.abs(scaleFactor) > 0 ? velocity / scaleFactor : 0;
   }
 }
