@@ -90,7 +90,9 @@ export class Spring {
       return;
     }
 
+    this._notifyListeners("onAtRest");
     this._isAnimating = false;
+
     if (!this._currentAnimationStep) {
       cancelAnimationFrame(this._currentAnimationStep);
       this._currentAnimationStep = undefined;
@@ -280,7 +282,6 @@ export class Spring {
       }
 
       this._springAtRest = true;
-      this._notifyListeners("onAtRest");
       this.stop();
       return;
     }
