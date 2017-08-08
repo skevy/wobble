@@ -9,6 +9,7 @@
   "module": "dist/wobble.es.js",
   "browser": "dist/wobble.browser.js",
   "scripts": {
+    "test": "jest",
     "dist-es": "NODE_ENV=production rollup -c --format es --output dist/wobble.es.js",
     "dist-cjs": "NODE_ENV=production rollup -c --format cjs --output dist/wobble.cjs.js",
     "dist-browser": "NODE_ENV=production rollup -c --format iife --output dist/wobble.browser.js",
