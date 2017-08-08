@@ -1,0 +1,8 @@
+# From https://circleci.com/docs/yarn/
+machine:
+  node:
+    version: 7.7.4
+
+test:
+  override:
+    - yarn run test
