@@ -31,5 +31,6 @@ export class Spring {
   updateConfig(updatedConfig: PartialSpringConfig): void;
 
   onUpdate(listener: SpringListener): Spring;
+  onActive(listener: SpringListener): Spring;
   onAtRest(listener: SpringListener): Spring;
 }
