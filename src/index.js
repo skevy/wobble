@@ -4,18 +4,13 @@
 
 import { invariant, withDefault } from "./utils";
 
-/**
- * Implements a spring physics simulation based on the equations behind
- * damped harmonic oscillators (https://en.wikipedia.org/wiki/Harmonic_oscillator#Damped_harmonic_oscillator).
- */
-
 type SpringConfig = {
   fromValue: number, // Starting value of the animation.
   toValue: number, // Ending value of the animation.
   stiffness: number, // The spring stiffness coefficient.
   damping: number, // Defines how the spring’s motion should be damped due to the forces of friction.
   mass: number, // The mass of the object attached to the end of the spring.
-  initialVelocity: number, // The initial velocity (in px/ms) of the object attached to the spring.
+  initialVelocity: number, // The initial velocity (in units/ms) of the object attached to the spring.
   allowsOverdamping: boolean,
   overshootClamping: boolean,
   restVelocityThreshold: number,
@@ -31,6 +26,10 @@ type SpringListener = {
   onAtRest?: SpringListenerFn
 };
 
+/**
+ * Implements a spring physics simulation based on the equations behind
+ * damped harmonic oscillators (https://en.wikipedia.org/wiki/Harmonic_oscillator#Damped_harmonic_oscillator).
+ */
 export class Spring {
   static MAX_DELTA_TIME_MS = 1 / 60 * 1000 * 4; // advance 4 frames at max
 
@@ -69,6 +68,10 @@ export class Spring {
     );
   }
 
+  /**
+   * If `fromValue` differs from `toValue`, or `initialVelocity` is non-zero,
+   * start the simulation and call the `onActive` listeners.
+   */
   start() {
     const { fromValue, toValue, initialVelocity } = this._config;
 
@@ -85,6 +88,9 @@ export class Spring {
     }
   }
 
+  /**
+   * If a simulation is in progress, stop it and call the `onAtRest` listeners.
+   */
   stop() {
     if (!this._isAnimating) {
       return;
@@ -99,22 +105,40 @@ export class Spring {
     }
   }
 
+  /**
+   * The spring's current position, calculated against `fromValue` and
+   * `toValue`.
+   */
   get position(): number {
     // Lerp the value + velocity over the animation's start/end values
     const scaleFactor = this._config.toValue - this._config.fromValue;
     return this._config.fromValue + this.normalizedPosition * scaleFactor;
   }
 
+  /**
+   * The spring's current velocity, calculated against `fromValue` and
+   * `toValue`, in units / ms.
+   */
   get velocity(): number {
     // invert and then scale the velocity over the animation's start/end values
     const scaleFactor = this._config.toValue - this._config.fromValue;
-    return this.normalizedVelocity * scaleFactor; // give velocity in px/ms;
+    return this.normalizedVelocity * scaleFactor; // give velocity in units/ms;
   }
 
+  /**
+   * The spring's current position, independent of `fromValue` and `toValue`.
+   * If `fromValue` was 0 and `toValue` was 1, this would be the same as
+   * `position`.
+   */
   get normalizedPosition(): number {
     return this._currentNormalizedPosition;
   }
 
+  /**
+   * The spring's current velocity, independent of `fromValue` and `toValue`, in
+   * units / ms. If `fromValue` was 0 and `toValue` was 1, this would be the
+   * same as `velocity`.
+   */
   get normalizedVelocity(): number {
     return this._currentNormalizedVelocity;
   }
@@ -136,16 +160,26 @@ export class Spring {
     this.start();
   }
 
-  onUpdate(listener: SpringListenerFn): Spring {
-    this._listeners.push({ onUpdate: listener });
-    return this;
-  }
-
+  /**
+   * The provided callback will be invoked when the simulation begins.
+   */
   onActive(listener: SpringListenerFn): Spring {
     this._listeners.push({ onActive: listener });
     return this;
   }
 
+  /**
+   * The provided callback will be invoked on each frame while the simulation is
+   * running.
+   */
+  onUpdate(listener: SpringListenerFn): Spring {
+    this._listeners.push({ onUpdate: listener });
+    return this;
+  }
+
+  /**
+   * The provided callback will be invoked when the simulation ends.
+   */
   onAtRest(listener: SpringListenerFn): Spring {
     this._listeners.push({ onAtRest: listener });
     return this;
