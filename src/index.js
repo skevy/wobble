@@ -63,9 +63,6 @@ export class Spring {
         0.001
       )
     };
-    this._config.initialVelocity = this._normalizeVelocity(
-      withDefault(config.initialVelocity, 0)
-    );
   }
 
   /**
@@ -79,6 +76,7 @@ export class Spring {
       this._springTime = 0.0;
       this._springAtRest = false;
       this._isAnimating = true;
+
       if (!this._currentAnimationStep) {
         this._currentAnimationStep = requestAnimationFrame((t: number) => {
           this._notifyListeners("onActive");
@@ -225,8 +223,15 @@ export class Spring {
     const k = this._config.stiffness;
     const fromValue = this._config.fromValue;
     const toValue = this._config.toValue;
-    // invert the initial velocity, as we expect our spring has an x0 of 1
-    const v0 = -this._config.initialVelocity;
+    const initialVelocity = this._config.initialVelocity;
+
+    let v0 = 0;
+
+    if (fromValue !== toValue) {
+      // normalize and invert the initial velocity, as we expect our spring has
+      // an x0 of 1
+      v0 = -initialVelocity / (toValue - fromValue);
+    }
 
     invariant(m > 0, "Mass value must be greater than 0");
     invariant(k > 0, "Stiffness value must be greater than 0");
@@ -341,10 +346,5 @@ export class Spring {
     const isDisplacement =
       stiffness !== 0 && Math.abs(1 - oscillation) <= restDisplacementThreshold;
     return isDisplacement && isVelocity;
-  }
-
-  _normalizeVelocity(velocity: number): number {
-    const scaleFactor = this._config.toValue - this._config.fromValue;
-    return Math.abs(scaleFactor) > 0 ? velocity / scaleFactor : 0;
   }
 }
