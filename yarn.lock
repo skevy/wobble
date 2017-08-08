@@ -853,7 +853,7 @@ babel-types@^6.18.0, babel-types@^6.19.0, babel-types@^6.23.0, babel-types@^6.24
     lodash "^4.2.0"
     to-fast-properties "^1.0.1"
 
-babylon@^6.17.0, babylon@^6.17.2, babylon@^6.17.4:
+babylon@^6.15.0, babylon@^6.17.0, babylon@^6.17.2, babylon@^6.17.4:
   version "6.17.4"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.17.4.tgz#3e8b7402b88d22c3423e137a1577883b15ff869a"
 
@@ -1530,6 +1530,13 @@ flat-cache@^1.2.1:
 flow-bin@^0.52.0:
   version "0.52.0"
   resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.52.0.tgz#b6d9abe8bcd1ee5c62df386451a4e2553cadc3a3"
+
+flow-remove-types@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/flow-remove-types/-/flow-remove-types-1.2.1.tgz#58e261bf8b842bd234c86cafb982a1213aff0edb"
+  dependencies:
+    babylon "^6.15.0"
+    vlq "^0.2.1"
 
 flow-typed@^2.1.5:
   version "2.1.5"
