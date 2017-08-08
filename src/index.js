@@ -39,7 +39,6 @@ export class Spring {
 
   _currentTime: number = 0; // Current timestamp of animation in ms (real time)
   _springTime: number = 0; // Current time along the spring curve in ms (zero-based)
-  _isAnimating: boolean = false;
 
   _currentNormalizedPosition: number = 0; // the current value of the spring
   _currentNormalizedVelocity: number = 0; // the current velocity of the spring
@@ -75,7 +74,6 @@ export class Spring {
     if (fromValue !== toValue || initialVelocity !== 0) {
       this._springTime = 0.0;
       this._springAtRest = false;
-      this._isAnimating = true;
 
       if (!this._currentAnimationStep) {
         this._currentAnimationStep = requestAnimationFrame((t: number) => {
@@ -90,12 +88,12 @@ export class Spring {
    * If a simulation is in progress, stop it and call the `onAtRest` listeners.
    */
   stop() {
-    if (!this._isAnimating) {
+    if (this._springAtRest) {
       return;
     }
 
     this._notifyListeners("onAtRest");
-    this._isAnimating = false;
+    this._springAtRest = true;
 
     if (this._currentAnimationStep) {
       cancelAnimationFrame(this._currentAnimationStep);
@@ -201,7 +199,7 @@ export class Spring {
     this._evaluateSpring(deltaTime);
 
     this._currentTime = timestamp;
-    if (this._isAnimating && !this._springAtRest) {
+    if (!this._springAtRest) {
       this._currentAnimationStep = requestAnimationFrame((t: number) =>
         this._step(t)
       );
@@ -301,7 +299,7 @@ export class Spring {
     this._currentNormalizedVelocity = velocity;
 
     this._notifyListeners("onUpdate");
-    if (!this._isAnimating) {
+    if (this._springAtRest) {
       // a listener might have stopped us in _onUpdate
       return;
     }
@@ -320,7 +318,6 @@ export class Spring {
         this._notifyListeners("onUpdate");
       }
 
-      this._springAtRest = true;
       this.stop();
       return;
     }
