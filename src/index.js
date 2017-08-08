@@ -27,6 +27,7 @@ type PartialSpringConfig = $Shape<SpringConfig>;
 type SpringListenerFn = (spring: Spring) => void;
 type SpringListener = {
   onUpdate?: SpringListenerFn,
+  onActive?: SpringListenerFn,
   onAtRest?: SpringListenerFn
 };
 
@@ -72,9 +73,12 @@ export class Spring {
     this._springTime = 0.0;
     this._springAtRest = false;
     this._isAnimating = true;
-    this._currentAnimationStep = requestAnimationFrame((t: number) => {
-      this._step(t);
-    });
+    if (this._currentAnimationStep === undefined) {
+      this._currentAnimationStep = requestAnimationFrame((t: number) => {
+        this._notifyListeners("onActive");
+        this._step(t);
+      });
+    }
   }
 
   stop() {
@@ -85,6 +89,7 @@ export class Spring {
     this._isAnimating = false;
     if (!this._currentAnimationStep) {
       cancelAnimationFrame(this._currentAnimationStep);
+      this._currentAnimationStep = undefined;
     }
   }
 
@@ -135,6 +140,11 @@ export class Spring {
 
   onUpdate(listener: SpringListenerFn): Spring {
     this._listeners.push({ onUpdate: listener });
+    return this;
+  }
+
+  onActive(listener: SpringListenerFn): Spring {
+    this._listeners.push({ onActive: listener });
     return this;
   }
 
@@ -275,6 +285,7 @@ export class Spring {
 
       this._springAtRest = true;
       this._notifyListeners("onAtRest");
+      this.stop();
       return;
     }
   }
