@@ -1,0 +1,20 @@
+# From https://circleci.com/docs/yarn/
+machine:
+  node:
+    version: 7.7.4
+
+dependencies:
+  override:
+    - yarn
+  cache_directories:
+    - ~/.cache/yarn
+
+test:
+  override:
+    - yarn run test
+
+
+# From http://codereview.cc/harbormaster/step/edit/6/
+notify:
+  webhooks:
+    - url: http://codereview.cc/harbormaster/hook/circleci/
