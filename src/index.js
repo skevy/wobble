@@ -70,14 +70,18 @@ export class Spring {
   }
 
   start() {
-    this._springTime = 0.0;
-    this._springAtRest = false;
-    this._isAnimating = true;
-    if (this._currentAnimationStep === undefined) {
-      this._currentAnimationStep = requestAnimationFrame((t: number) => {
-        this._notifyListeners("onActive");
-        this._step(t);
-      });
+    const { fromValue, toValue, initialVelocity } = this._config;
+
+    if (fromValue !== toValue || initialVelocity !== 0) {
+      this._springTime = 0.0;
+      this._springAtRest = false;
+      this._isAnimating = true;
+      if (!this._currentAnimationStep) {
+        this._currentAnimationStep = requestAnimationFrame((t: number) => {
+          this._notifyListeners("onActive");
+          this._step(t);
+        });
+      }
     }
   }
 
@@ -127,15 +131,7 @@ export class Spring {
       ...updatedConfig
     };
 
-    const {
-      fromValue,
-      toValue,
-      initialVelocity,
-    } = this._config;
-
-    if (fromValue !== toValue || initialVelocity !== 0) {
-      this.start();
-    }
+    this.start();
   }
 
   onUpdate(listener: SpringListenerFn): Spring {
