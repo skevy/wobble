@@ -93,7 +93,7 @@ export class Spring {
     this._notifyListeners("onAtRest");
     this._isAnimating = false;
 
-    if (!this._currentAnimationStep) {
+    if (this._currentAnimationStep) {
       cancelAnimationFrame(this._currentAnimationStep);
       this._currentAnimationStep = undefined;
     }
