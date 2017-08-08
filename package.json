@@ -8,6 +8,7 @@
   "main": "dist/wobble.cjs.js",
   "module": "dist/wobble.es.js",
   "browser": "dist/wobble.browser.js",
+  "types": "wobble.d.ts",
   "scripts": {
     "test": "jest",
     "dist-es": "NODE_ENV=production rollup -c --format es --output dist/wobble.es.js",
@@ -17,7 +18,8 @@
     "prepublish": "yarn run dist"
   },
   "files": [
-    "dist"
+    "dist",
+    "wobble.d.ts"
   ],
   "jest": {
     "setupFiles": [
