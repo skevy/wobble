@@ -77,6 +77,7 @@ export class Spring {
 
     if (fromValue !== toValue || initialVelocity !== 0) {
       this._springTime = 0.0;
+      this._currentNormalizedPosition = 0.0;
       this._springAtRest = false;
 
       if (!this._currentAnimationStep) {
@@ -148,8 +149,14 @@ export class Spring {
    * supplied will be reused from the existing config.
    */
   updateConfig(updatedConfig: PartialSpringConfig): void {
-    // `spring.start()` will reset the time to 0.  Record its current position
-    // before that happens.
+    // `spring.start()` will reset the time to 0.  If there's currently a
+    // simulation happening, we should ensure that `fromValue` is updated before
+    // the spring is reset.  However, if the caller has explicitly set
+    // `fromValue`, we should reset the spring's position to ensure it doesn't
+    // get clobbered.
+    if (updatedConfig.hasOwnProperty("fromValue")) {
+      this._currentNormalizedPosition = 0;
+    }
     this._config.fromValue = this.position;
 
     this._config = {
