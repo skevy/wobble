@@ -76,6 +76,7 @@ export class Spring {
     const { fromValue, toValue, initialVelocity } = this._config;
 
     if (fromValue !== toValue || initialVelocity !== 0) {
+      this._currentTime = 0.0;
       this._springTime = 0.0;
       this._currentNormalizedPosition = 0.0;
       this._springAtRest = false;
