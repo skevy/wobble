@@ -6,17 +6,22 @@
   "author": "Adam Miskiewicz <adam@sk3vy.com>",
   "license": "MIT",
   "main": "dist/wobble.cjs.js",
-  "module": "dist/module/index.js",
+  "src": "dist/module/index.js",
+  "module": "dist/wobble.es.js",
   "browser": "dist/wobble.browser.js",
   "types": "wobble.d.ts",
   "scripts": {
-    "test": "jest",
+    "test": "jest --coverage && flow check",
     "clean": "rm -rf ./dist/",
-    "dist-es": "NODE_ENV=production flow-remove-types src/ --out-dir dist/module/ --ignore /__tests__/",
-    "dist-cjs": "NODE_ENV=production rollup -c --format cjs --output dist/wobble.cjs.js",
-    "dist-browser": "NODE_ENV=production rollup -c --format iife --output dist/wobble.browser.js",
-    "dist": "yarn run clean; concurrently \"yarn dist-es\" \"yarn dist-cjs\" \"yarn dist-browser\"",
-    "prepublish": "yarn run dist"
+    "flow-check": "flow check",
+    "watch": "yarn dist-es -- -w",
+    "dist-src": "flow-remove-types src/ --out-dir dist/module/ --ignore /__tests__/",
+    "dist-es": "ROLLUP_CONFIG=es rollup -c --output dist/wobble.es.js",
+    "dist-cjs": "ROLLUP_CONFIG=browser rollup -c --format cjs --output dist/wobble.cjs.js",
+    "dist-browser": "ROLLUP_CONFIG=browser rollup -c --format iife --output dist/wobble.browser.js",
+    "dist": "yarn run clean; concurrently \"yarn dist-src\" \"yarn dist-es\" \"yarn dist-cjs\" \"yarn dist-browser\"",
+    "prepublish": "yarn run dist",
+    "precommit": "lint-staged"
   },
   "files": [
     "dist",
@@ -32,14 +37,20 @@
     ],
     "timers": "fake"
   },
+  "lint-staged": {
+    "*.js": [
+      "eslint"
+    ]
+  },
   "devDependencies": {
+    "babel-core": "^6.25.0",
     "babel-eslint": "^7.2.3",
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-preset-env": "^1.6.0",
     "babel-preset-stage-0": "^6.24.1",
     "concurrently": "^3.5.0",
-    "eslint": "^4.4.0",
+    "eslint": "^4.4.1",
     "eslint-config-prettier": "^2.3.0",
     "eslint-plugin-flowtype": "^2.35.0",
     "eslint-plugin-import": "^2.7.0",
@@ -47,7 +58,9 @@
     "flow-bin": "^0.52.0",
     "flow-remove-types": "^1.2.1",
     "flow-typed": "^2.1.5",
+    "husky": "^0.14.3",
     "jest": "^20.0.4",
+    "lint-staged": "^4.0.3",
     "prettier": "^1.5.3",
     "rimraf": "^2.6.1",
     "rollup": "^0.45.2",
@@ -55,6 +68,7 @@
     "rollup-plugin-commonjs": "^8.1.0",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-uglify": "^2.0.1",
+    "rollup-watch": "^4.3.1",
     "uglify-es": "^3.0.27"
   }
 }
