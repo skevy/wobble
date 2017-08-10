@@ -66,4 +66,14 @@ export class Spring {
    * The provided callback will be invoked when the simulation ends.
    */
   onAtRest(listener: SpringListener): Spring;
+  
+  /**
+   * Remove a single listener from this spring.
+   */
+  removeListener(listener: SpringListener): Spring;
+  
+  /**
+   * Removes all listeners from this spring.
+   */
+  removeAllListeners(): Spring
 }

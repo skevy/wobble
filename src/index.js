@@ -177,7 +177,7 @@ export class Spring {
   }
 
   /**
-   * Remove listener
+   * Remove a single listener from this spring.
    */
   removeListener(listenerFn: SpringListenerFn): Spring {
     this._listeners = this._listeners.reduce((result, listener) => {
@@ -192,9 +192,9 @@ export class Spring {
   }
 
   /**
-   * Clear all listeners on this spring.
+   * Removes all listeners from this spring.
    */
-  clearAllListeners(): Spring {
+  removeAllListeners(): Spring {
     this._listeners = [];
     return this;
   }

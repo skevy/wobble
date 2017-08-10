@@ -193,7 +193,7 @@ describe("Spring", () => {
     const onUpdateListener = () => {};
     spring.onUpdate(onUpdateListener);
     expect(spring._listeners[0].onUpdate).toBe(onUpdateListener);
-    spring.clearAllListeners();
+    spring.removeAllListeners();
     expect(spring._listeners).toEqual([]);
   });
 
@@ -210,7 +210,7 @@ describe("Spring", () => {
 
     jest.runTimersToTime(1000 / 60 * numFrames + 1); // add an extra ms to fix any rounding errors
 
-    spring.clearAllListeners();
+    spring.removeAllListeners();
 
     return { values, velocities };
   }
