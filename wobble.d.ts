@@ -23,30 +23,14 @@ export class Spring {
   static MAX_DELTA_TIME_MS: number;
 
   /**
-   * The spring's current position, calculated against `fromValue` and
-   * `toValue`.
+   * The spring's current position.
    */
-  readonly position: number;
+  readonly currentValue: number;
 
   /**
-   * The spring's current velocity, calculated against `fromValue` and
-   * `toValue`, in units / ms.
+   * The spring's current velocity.
    */
-  readonly velocity: number;
-
-  /**
-   * The spring's current position, independent of `fromValue` and `toValue`.
-   * If `fromValue` was 0 and `toValue` was 1, this would be the same as
-   * `position`.
-   */
-  readonly normalizedPosition: number;
-
-  /**
-   * The spring's current velocity, independent of `fromValue` and `toValue`, in
-   * units / ms. If `fromValue` was 0 and `toValue` was 1, this would be the
-   * same as `velocity`.
-   */
-  readonly normalizedVelocity: number;
+  readonly currentVelocity: number;
 
   constructor(config?: PartialSpringConfig);
 
