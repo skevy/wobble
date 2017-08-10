@@ -109,16 +109,14 @@ export class Spring {
   }
 
   /**
-   * The spring's current position, calculated against `fromValue` and
-   * `toValue`.
+   * The spring's current position.
    */
   get currentValue(): number {
     return this._currentValue;
   }
 
   /**
-   * The spring's current velocity, calculated against `fromValue` and
-   * `toValue`, in units / ms.
+   * The spring's current velocity in units / ms.
    */
   get currentVelocity(): number {
     return this._currentVelocity; // give velocity in units/ms;
