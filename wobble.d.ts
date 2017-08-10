@@ -23,16 +23,14 @@ export class Spring {
   static MAX_DELTA_TIME_MS: number;
 
   /**
-   * The spring's current position, calculated against `fromValue` and
-   * `toValue`.
+   * The spring's current position.
    */
-  readonly position: number;
+  readonly currentValue: number;
 
   /**
-   * The spring's current velocity, calculated against `fromValue` and
-   * `toValue`, in units / ms.
+   * The spring's current velocity.
    */
-  readonly velocity: number;
+  readonly currentVelocity: number;
 
   constructor(config?: PartialSpringConfig);
 

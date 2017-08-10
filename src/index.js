@@ -39,12 +39,12 @@ export class Spring {
 
   _config: SpringConfig;
   _listeners: Array<SpringListener> = [];
-  _currentAnimationStep: number | null = null; // current requestAnimationFrame
+  _currentAnimationStep: number = 0; // current requestAnimationFrame
 
   _currentTime: number = 0; // Current timestamp of animation in ms (real time)
   _springTime: number = 0; // Current time along the spring curve in ms (zero-based)
 
-  _currentPosition: number = 0; // the current value of the spring
+  _currentValue: number = 0; // the current value of the spring
   _currentVelocity: number = 0; // the current velocity of the spring
   _springAtRest: boolean = true;
 
@@ -78,10 +78,11 @@ export class Spring {
     if (fromValue !== toValue || initialVelocity !== 0) {
       this._currentTime = 0.0;
       this._springTime = 0.0;
-      this._currentPosition = 0.0;
+      this._currentValue = fromValue;
+      this._currentVelocity = initialVelocity;
       this._springAtRest = false;
 
-      if (this._currentAnimationStep === null) {
+      if (this._currentAnimationStep === 0) {
         this._currentAnimationStep = requestAnimationFrame((t: number) => {
           this._notifyListeners("onActive");
           this._step(t);
@@ -101,9 +102,9 @@ export class Spring {
     this._notifyListeners("onAtRest");
     this._springAtRest = true;
 
-    if (this._currentAnimationStep !== null) {
+    if (this._currentAnimationStep !== 0) {
       cancelAnimationFrame(this._currentAnimationStep);
-      this._currentAnimationStep = null;
+      this._currentAnimationStep = 0;
     }
   }
 
@@ -111,17 +112,15 @@ export class Spring {
    * The spring's current position, calculated against `fromValue` and
    * `toValue`.
    */
-  get position(): number {
-    // Lerp the value + velocity over the animation's start/end values
-    return this._currentPosition;
+  get currentValue(): number {
+    return this._currentValue;
   }
 
   /**
    * The spring's current velocity, calculated against `fromValue` and
    * `toValue`, in units / ms.
    */
-  get velocity(): number {
-    // invert and then scale the velocity over the animation's start/end values
+  get currentVelocity(): number {
     return this._currentVelocity; // give velocity in units/ms;
   }
 
@@ -222,7 +221,7 @@ export class Spring {
     const omega0 = Math.sqrt(k / m) / 1000; // undamped angular frequency of the oscillator (rad/ms)
     const omega1 = omega0 * Math.sqrt(1.0 - zeta * zeta); // exponential decay
     const omega2 = omega0 * Math.sqrt(zeta * zeta - 1.0); // frequency of damped oscillation
-    const x0 = toValue - fromValue; // calculate the oscillation from x0 = 1 to x = 0
+    const x0 = toValue - fromValue; // initial displacement of the spring at t = 0
 
     if (zeta > 1 && !this._config.allowsOverdamping) {
       zeta = 1;
@@ -278,7 +277,7 @@ export class Spring {
           omega2;
     }
 
-    this._currentPosition = oscillation;
+    this._currentValue = oscillation;
     this._currentVelocity = velocity;
 
     this._notifyListeners("onUpdate");
@@ -293,7 +292,7 @@ export class Spring {
     if (this._isSpringOvershooting() || this._isSpringAtRest()) {
       if (k !== 0) {
         // Ensure that we end up with a round value
-        this._currentPosition = toValue;
+        this._currentValue = toValue;
         this._currentVelocity = 0;
         this._notifyListeners("onUpdate");
       }
@@ -308,9 +307,9 @@ export class Spring {
     let isOvershooting = false;
     if (overshootClamping && stiffness !== 0) {
       if (fromValue < toValue) {
-        isOvershooting = this.position > toValue;
+        isOvershooting = this._currentValue > toValue;
       } else {
-        isOvershooting = this.position < toValue;
+        isOvershooting = this._currentValue < toValue;
       }
     }
     return isOvershooting;
@@ -324,10 +323,11 @@ export class Spring {
       restVelocityThreshold
     } = this._config;
 
-    const isVelocity = Math.abs(this.velocity) <= restVelocityThreshold;
-    const isDisplacement =
+    const isNoVelocity =
+      Math.abs(this._currentVelocity) <= restVelocityThreshold;
+    const isNoDisplacement =
       stiffness !== 0 &&
-      Math.abs(toValue - this.position) <= restDisplacementThreshold;
-    return isDisplacement && isVelocity;
+      Math.abs(toValue - this._currentValue) <= restDisplacementThreshold;
+    return isNoDisplacement && isNoVelocity;
   }
 }
