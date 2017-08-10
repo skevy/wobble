@@ -82,7 +82,7 @@ export class Spring {
       this._currentVelocity = initialVelocity;
       this._springAtRest = false;
 
-      if (this._currentAnimationStep === 0) {
+      if (!this._currentAnimationStep) {
         this._currentAnimationStep = requestAnimationFrame((t: number) => {
           this._notifyListeners("onActive");
           this._step(t);
@@ -102,7 +102,7 @@ export class Spring {
     this._notifyListeners("onAtRest");
     this._springAtRest = true;
 
-    if (this._currentAnimationStep !== 0) {
+    if (this._currentAnimationStep) {
       cancelAnimationFrame(this._currentAnimationStep);
       this._currentAnimationStep = 0;
     }
@@ -129,14 +129,14 @@ export class Spring {
    * supplied will be reused from the existing config.
    */
   updateConfig(updatedConfig: PartialSpringConfig): void {
-    // When we update the config of the spring and change it's parameters,
+    // When we update the config of the spring and change its parameters,
     // we're going to restart the simulation from time "0".
     // The base case is:
     //  - newConfig.fromValue = current value of the spring
     //  - newConfig.toValue = no change
     //  - newConfig.initialVelocity = current velocity of the spring
     // Setting the config like this will continue the spring in
-    // it's current motion.
+    // its current motion.
     const baseConfig = {
       fromValue: this._currentValue,
       initialVelocity: this._currentVelocity

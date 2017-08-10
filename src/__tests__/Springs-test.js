@@ -89,7 +89,7 @@ describe("Spring", () => {
       velocities: expectedVelocities
     } = _measureSpringDynamics(spring, 60);
 
-    // Just run spring for 10 frames...we don't care about it's
+    // Just run spring for 10 frames...we don't care about its
     // values/velocities -- other tests cover this
     _measureSpringDynamics(spring, 10);
 
@@ -164,7 +164,7 @@ describe("Spring", () => {
 
     spring.updateConfig({
       initialVelocity: 200
-    }); // Extend the spring
+    });
 
     // Run the simulation till spring rests
     const {
@@ -173,7 +173,7 @@ describe("Spring", () => {
     } = _measureSpringDynamics(spring, 60);
 
     // Expect spring to be at rest with new values
-    expect(valuesAfterUpdate[0]).toBe(expectedValues[9]); // firts frame should be the same position as ending frame
+    expect(valuesAfterUpdate[0]).toBe(expectedValues[9]); // first frame should be the same position as ending frame
     expect(valuesAfterUpdate[1]).toBeGreaterThan(2000); // should go to a really high number
     expect(velocitiesAfterUpdate[0]).toBe(200);
     expect(velocitiesAfterUpdate[8]).toBeLessThan(0); // given the spring dynamics, v should go negative pretty quickly
