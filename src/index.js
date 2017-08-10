@@ -82,7 +82,7 @@ export class Spring {
       this._currentVelocity = initialVelocity;
       this._springAtRest = false;
 
-      if (this._currentAnimationStep === 0) {
+      if (!this._currentAnimationStep) {
         this._currentAnimationStep = requestAnimationFrame((t: number) => {
           this._notifyListeners("onActive");
           this._step(t);
@@ -102,7 +102,7 @@ export class Spring {
     this._notifyListeners("onAtRest");
     this._springAtRest = true;
 
-    if (this._currentAnimationStep !== 0) {
+    if (this._currentAnimationStep) {
       cancelAnimationFrame(this._currentAnimationStep);
       this._currentAnimationStep = 0;
     }
@@ -127,17 +127,22 @@ export class Spring {
    * supplied will be reused from the existing config.
    */
   updateConfig(updatedConfig: PartialSpringConfig): void {
-    // `spring.start()` will reset the time to 0.  If there's currently a
-    // simulation happening, we should ensure that `fromValue` is updated before
-    // the spring is reset.  However, if the caller has explicitly set
-    // `fromValue`, we should reset the spring's position to ensure it doesn't
-    // get clobbered.
-    if (updatedConfig.hasOwnProperty("fromValue")) {
-      this._currentPosition = 0;
-    }
+    // When we update the config of the spring and change its parameters,
+    // we're going to restart the simulation from time "0".
+    // The base case is:
+    //  - newConfig.fromValue = current value of the spring
+    //  - newConfig.toValue = no change
+    //  - newConfig.initialVelocity = current velocity of the spring
+    // Setting the config like this will continue the spring in
+    // its current motion.
+    const baseConfig = {
+      fromValue: this._currentValue,
+      initialVelocity: this._currentVelocity
+    };
 
     this._config = {
       ...this._config,
+      ...baseConfig,
       ...updatedConfig
     };
 
@@ -166,6 +171,29 @@ export class Spring {
    */
   onAtRest(listener: SpringListenerFn): Spring {
     this._listeners.push({ onAtRest: listener });
+    return this;
+  }
+
+  /**
+   * Remove a single listener from this spring.
+   */
+  removeListener(listenerFn: SpringListenerFn): Spring {
+    this._listeners = this._listeners.reduce((result, listener) => {
+      const foundListenerFn =
+        Object.values(listener).indexOf(listenerFn) !== -1;
+      if (!foundListenerFn) {
+        result.push(listener);
+      }
+      return result;
+    }, []);
+    return this;
+  }
+
+  /**
+   * Removes all listeners from this spring.
+   */
+  removeAllListeners(): Spring {
+    this._listeners = [];
     return this;
   }
 
