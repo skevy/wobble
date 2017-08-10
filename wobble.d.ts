@@ -34,20 +34,6 @@ export class Spring {
    */
   readonly velocity: number;
 
-  /**
-   * The spring's current position, independent of `fromValue` and `toValue`.
-   * If `fromValue` was 0 and `toValue` was 1, this would be the same as
-   * `position`.
-   */
-  readonly normalizedPosition: number;
-
-  /**
-   * The spring's current velocity, independent of `fromValue` and `toValue`, in
-   * units / ms. If `fromValue` was 0 and `toValue` was 1, this would be the
-   * same as `velocity`.
-   */
-  readonly normalizedVelocity: number;
-
   constructor(config?: PartialSpringConfig);
 
   /**

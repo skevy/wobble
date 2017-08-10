@@ -18,15 +18,11 @@ describe("Spring", () => {
       mass: 3
     });
 
-    const normalizedSpringPositions = [];
-    const normalizedSpringVelocities = [];
     const realSpringPositions = [];
     const realSpringVelocities = [];
 
     spring
       .onUpdate(spring => {
-        normalizedSpringPositions.push(spring.normalizedPosition);
-        normalizedSpringVelocities.push(spring.normalizedVelocity);
         realSpringPositions.push(spring.position);
         realSpringVelocities.push(spring.velocity);
       })
@@ -35,8 +31,6 @@ describe("Spring", () => {
     // Run timers for one second (60 frames)
     jest.runTimersToTime(1000 / 60 * 60);
 
-    expect(normalizedSpringPositions).toMatchSnapshot();
-    expect(normalizedSpringVelocities).toMatchSnapshot();
     expect(realSpringPositions).toMatchSnapshot();
     expect(realSpringVelocities).toMatchSnapshot();
   });
