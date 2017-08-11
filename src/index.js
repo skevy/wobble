@@ -127,14 +127,15 @@ export class Spring {
    * supplied will be reused from the existing config.
    */
   updateConfig(updatedConfig: PartialSpringConfig): void {
-    // When we update the config of the spring and change its parameters,
-    // we're going to restart the simulation from time "0".
-    // The base case is:
+    // When we update the config of the spring and change its parameters, we're
+    // going to restart the simulation from time "0". The base case is:
+    //
     //  - newConfig.fromValue = current value of the spring
     //  - newConfig.toValue = no change
     //  - newConfig.initialVelocity = current velocity of the spring
-    // Setting the config like this will continue the spring in
-    // its current motion.
+    //
+    // Setting the config like this will continue the spring in its current
+    // motion.
     const baseConfig = {
       fromValue: this._currentValue,
       initialVelocity: this._currentVelocity
@@ -146,7 +147,9 @@ export class Spring {
       ...updatedConfig
     };
 
-    this.start();
+    if (updatedConfig.hasOwnProperty("toValue")) {
+      this.start();
+    }
   }
 
   /**
