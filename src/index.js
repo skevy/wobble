@@ -76,10 +76,7 @@ export class Spring {
     const { fromValue, toValue, initialVelocity } = this._config;
 
     if (fromValue !== toValue || initialVelocity !== 0) {
-      this._currentTime = 0.0;
-      this._springTime = 0.0;
-      this._currentValue = fromValue;
-      this._currentVelocity = initialVelocity;
+      this._reset();
       this._isAnimating = true;
 
       if (!this._currentAnimationStep) {
@@ -146,14 +143,15 @@ export class Spring {
    * supplied will be reused from the existing config.
    */
   updateConfig(updatedConfig: PartialSpringConfig): void {
-    // When we update the config of the spring and change its parameters,
-    // we're going to restart the simulation from time "0".
-    // The base case is:
+    // When we update the config of the spring and change its parameters, we're
+    // going to restart the simulation from time "0". The base case is:
+    //
     //  - newConfig.fromValue = current value of the spring
     //  - newConfig.toValue = no change
     //  - newConfig.initialVelocity = current velocity of the spring
-    // Setting the config like this will continue the spring in
-    // its current motion.
+    //
+    // Setting the config like this will continue the spring in its current
+    // motion.
     const baseConfig = {
       fromValue: this._currentValue,
       initialVelocity: this._currentVelocity
@@ -165,7 +163,9 @@ export class Spring {
       ...updatedConfig
     };
 
-    this.start();
+    // Ensure currentValue and currentVelocity are updated to reflect the
+    // changes.
+    this._reset();
   }
 
   /**
@@ -214,6 +214,13 @@ export class Spring {
   removeAllListeners(): Spring {
     this._listeners = [];
     return this;
+  }
+
+  _reset() {
+    this._currentTime = 0.0;
+    this._springTime = 0.0;
+    this._currentValue = this._config.fromValue;
+    this._currentVelocity = this._config.initialVelocity;
   }
 
   _notifyListeners(eventName: $Keys<SpringListener>) {
