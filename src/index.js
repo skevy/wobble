@@ -99,8 +99,8 @@ export class Spring {
       return;
     }
 
-    this._notifyListeners("onAtRest");
     this._springAtRest = true;
+    this._notifyListeners("onAtRest");
 
     if (this._currentAnimationStep) {
       cancelAnimationFrame(this._currentAnimationStep);
@@ -226,7 +226,7 @@ export class Spring {
     // If for some reason we lost a lot of frames (e.g. process large payload or
     // stopped in the debugger), we only advance by 4 frames worth of
     // computation and will continue on the next frame. It's better to have it
-    // running at faster speed than jumping to the end.
+    // running at slower speed than jumping to the end.
     if (deltaTime > Spring.MAX_DELTA_TIME_MS) {
       deltaTime = Spring.MAX_DELTA_TIME_MS;
     }
