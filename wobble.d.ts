@@ -31,17 +31,27 @@ export class Spring {
    * The spring's current velocity.
    */
   readonly currentVelocity: number;
+  
+  /**
+   * Whether or not the spring is at rest.
+   */
+  readonly isAtRest: boolean;
+  
+  /**
+   * Whether or not the spring is currently animating.
+   */
+  readonly isAnimating: boolean;
 
   constructor(config?: PartialSpringConfig);
 
   /**
    * If `fromValue` differs from `toValue`, or `initialVelocity` is non-zero,
-   * start the simulation and call the `onActive` listeners.
+   * start the simulation and call the `onStart` listeners.
    */
   start(): void;
 
   /**
-   * If a simulation is in progress, stop it and call the `onAtRest` listeners.
+   * If a simulation is in progress, stop it and call the `onStop` listeners.
    */
   stop(): void;
 
@@ -54,7 +64,7 @@ export class Spring {
   /**
    * The provided callback will be invoked when the simulation begins.
    */
-  onActive(listener: SpringListener): Spring;
+  onStart(listener: SpringListener): Spring;
 
   /**
    * The provided callback will be invoked on each frame while the simulation is
@@ -65,7 +75,7 @@ export class Spring {
   /**
    * The provided callback will be invoked when the simulation ends.
    */
-  onAtRest(listener: SpringListener): Spring;
+  onStop(listener: SpringListener): Spring;
   
   /**
    * Remove a single listener from this spring.
