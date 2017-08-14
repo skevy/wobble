@@ -197,7 +197,7 @@ describe("Spring", () => {
     expect(spring._listeners).toEqual([]);
   });
 
-  it("notifies listeners that the spring is at rest when a spring is stopped mid-simulation", () => {
+  it("notifies listeners that the spring has stopped when .stop() is called mid-simulation", () => {
     const spring = new Spring({
       toValue: 1
     });
@@ -206,15 +206,14 @@ describe("Spring", () => {
     spring
       .onStop(s => {
         onStopCallback(s);
-        expect(s.currentVelocity).toBe(0.00165009062976268);
+        expect(s.currentVelocity).toBeCloseTo(0.00165009062976268, 0.001);
       })
       .start();
 
     jest.runTimersToTime(1000 / 60 * 10);
 
-    expect(spring.isAtRest).toBeFalsy();
-
     spring.stop();
+    expect(spring.isAtRest).toBeFalsy();
     expect(onStopCallback).toHaveBeenCalledWith(spring);
 
     jest.runTimersToTime(1000 / 60 * 1);

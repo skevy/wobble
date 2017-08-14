@@ -50,7 +50,7 @@ export class Spring {
 
   _oscillationVelocityPairs = [];
 
-  constructor(config: PartialSpringConfig = {}): Spring {
+  constructor(config: PartialSpringConfig = {}) {
     this._config = {
       fromValue: withDefault(config.fromValue, 0),
       toValue: withDefault(config.toValue, 0),
@@ -66,7 +66,6 @@ export class Spring {
         0.001
       )
     };
-    return this;
   }
 
   /**
@@ -124,14 +123,17 @@ export class Spring {
   }
 
   /**
-   * Whether or not the spring is at rest.
+   * If the spring has reached its toValue, or if its velocity is below the 
+   * restVelocityThreshold, it is considered at rest. If stop is called during 
+   * a simulation, both isAnimating and isAtRest will be false.
    */
   get isAtRest(): boolean {
     return this._isSpringAtRest();
   }
 
   /**
-   * Whether or not the spring is currently animating.
+   * Note: this is distinct from whether or not it is at rest. 
+   * See also isAtRest.
    */
   get isAnimating(): boolean {
     return this._isAnimating;
