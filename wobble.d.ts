@@ -34,14 +34,16 @@ export class Spring {
   
   /**
    * If the spring has reached its toValue, or if its velocity is below the 
-   * restVelocityThreshold, it is considered at rest. If stop is called during 
+   * restVelocityThreshold, it is considered at rest. If `stop()` is called during 
    * a simulation, both isAnimating and isAtRest will be false.
    */
   readonly isAtRest: boolean;
   
   /**
+   * Whether or not the spring is currently emitting values.
+   * 
    * Note: this is distinct from whether or not it is at rest. 
-   * See also isAtRest.
+   * See also `isAtRest`.
    */
   readonly isAnimating: boolean;
 
