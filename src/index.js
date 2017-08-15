@@ -120,9 +120,9 @@ export class Spring {
   }
 
   /**
-   * If the spring has reached its toValue, or if its velocity is below the 
-   * restVelocityThreshold, it is considered at rest. If `stop()` is called during 
-   * a simulation, both isAnimating and isAtRest will be false.
+   * If the spring has reached its `toValue`, or if its velocity is below the
+   * `restVelocityThreshold`, it is considered at rest. If `stop()` is called
+   * during a simulation, both `isAnimating` and `isAtRest` will be false.
    */
   get isAtRest(): boolean {
     return this._isSpringAtRest();
@@ -143,15 +143,11 @@ export class Spring {
    * supplied will be reused from the existing config.
    */
   updateConfig(updatedConfig: PartialSpringConfig): void {
-    // When we update the config of the spring and change its parameters, we're
-    // going to restart the simulation from time "0". The base case is:
-    //
-    //  - newConfig.fromValue = current value of the spring
-    //  - newConfig.toValue = no change
-    //  - newConfig.initialVelocity = current velocity of the spring
-    //
-    // Setting the config like this will continue the spring in its current
-    // motion.
+    // When we update the spring config, we reset the simulation to ensure the
+    // spring always moves the full distance between `fromValue` and `toValue`.
+    // To ensure that the simulation behaves correctly if those values aren't
+    // being changed in `updatedConfig`, we default `fromValue` and
+    // `initialVelocity` to their current values.
     const baseConfig = {
       fromValue: this._currentValue,
       initialVelocity: this._currentVelocity
@@ -163,8 +159,6 @@ export class Spring {
       ...updatedConfig
     };
 
-    // Ensure currentValue and currentVelocity are updated to reflect the
-    // changes.
     this._reset();
   }
 
@@ -338,9 +332,9 @@ export class Spring {
       return;
     }
 
-    // If the Spring is overshooting (when overshoot clamping is on),
-    // or if the spring is at rest (based on the thresholds set in the config),
-    // stop the animation
+    // If the Spring is overshooting (when overshoot clamping is on), or if the
+    // spring is at rest (based on the thresholds set in the config), stop the
+    // animation.
     if (this._isSpringOvershooting() || this._isSpringAtRest()) {
       if (k !== 0) {
         // Ensure that we end up with a round value
