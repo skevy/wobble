@@ -26,8 +26,8 @@ type PartialSpringConfig = $Shape<SpringConfig>;
 type SpringListenerFn = (spring: Spring) => void;
 type SpringListener = {
   onUpdate?: SpringListenerFn,
-  onActive?: SpringListenerFn,
-  onAtRest?: SpringListenerFn
+  onStart?: SpringListenerFn,
+  onStop?: SpringListenerFn
 };
 
 /**
@@ -46,7 +46,7 @@ export class Spring {
 
   _currentValue: number = 0; // the current value of the spring
   _currentVelocity: number = 0; // the current velocity of the spring
-  _springAtRest: boolean = true;
+  _isAnimating: boolean = false;
 
   _oscillationVelocityPairs = [];
 
@@ -70,7 +70,7 @@ export class Spring {
 
   /**
    * If `fromValue` differs from `toValue`, or `initialVelocity` is non-zero,
-   * start the simulation and call the `onActive` listeners.
+   * start the simulation and call the `onStart` listeners.
    */
   start() {
     const { fromValue, toValue, initialVelocity } = this._config;
@@ -80,11 +80,11 @@ export class Spring {
       this._springTime = 0.0;
       this._currentValue = fromValue;
       this._currentVelocity = initialVelocity;
-      this._springAtRest = false;
+      this._isAnimating = true;
 
       if (!this._currentAnimationStep) {
         this._currentAnimationStep = requestAnimationFrame((t: number) => {
-          this._notifyListeners("onActive");
+          this._notifyListeners("onStart");
           this._step(t);
         });
       }
@@ -92,15 +92,15 @@ export class Spring {
   }
 
   /**
-   * If a simulation is in progress, stop it and call the `onAtRest` listeners.
+   * If a simulation is in progress, stop it and call the `onStop` listeners.
    */
   stop() {
-    if (this._springAtRest) {
+    if (!this._isAnimating) {
       return;
     }
 
-    this._springAtRest = true;
-    this._notifyListeners("onAtRest");
+    this._isAnimating = false;
+    this._notifyListeners("onStop");
 
     if (this._currentAnimationStep) {
       cancelAnimationFrame(this._currentAnimationStep);
@@ -120,6 +120,25 @@ export class Spring {
    */
   get currentVelocity(): number {
     return this._currentVelocity; // give velocity in units/ms;
+  }
+
+  /**
+   * If the spring has reached its toValue, or if its velocity is below the 
+   * restVelocityThreshold, it is considered at rest. If `stop()` is called during 
+   * a simulation, both isAnimating and isAtRest will be false.
+   */
+  get isAtRest(): boolean {
+    return this._isSpringAtRest();
+  }
+
+  /**
+   * Whether or not the spring is currently emitting values.
+   * 
+   * Note: this is distinct from whether or not it is at rest. 
+   * See also `isAtRest`.
+   */
+  get isAnimating(): boolean {
+    return this._isAnimating;
   }
 
   /**
@@ -152,8 +171,8 @@ export class Spring {
   /**
    * The provided callback will be invoked when the simulation begins.
    */
-  onActive(listener: SpringListenerFn): Spring {
-    this._listeners.push({ onActive: listener });
+  onStart(listener: SpringListenerFn): Spring {
+    this._listeners.push({ onStart: listener });
     return this;
   }
 
@@ -169,8 +188,8 @@ export class Spring {
   /**
    * The provided callback will be invoked when the simulation ends.
    */
-  onAtRest(listener: SpringListenerFn): Spring {
-    this._listeners.push({ onAtRest: listener });
+  onStop(listener: SpringListenerFn): Spring {
+    this._listeners.push({ onStop: listener });
     return this;
   }
 
@@ -215,7 +234,7 @@ export class Spring {
     this._evaluateSpring(deltaTime);
 
     this._currentTime = timestamp;
-    if (!this._springAtRest) {
+    if (this._isAnimating) {
       this._currentAnimationStep = requestAnimationFrame((t: number) =>
         this._step(t)
       );
@@ -307,7 +326,7 @@ export class Spring {
     this._currentVelocity = velocity;
 
     this._notifyListeners("onUpdate");
-    if (this._springAtRest) {
+    if (!this._isAnimating) {
       // a listener might have stopped us in _onUpdate
       return;
     }

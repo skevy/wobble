@@ -197,6 +197,30 @@ describe("Spring", () => {
     expect(spring._listeners).toEqual([]);
   });
 
+  it("notifies listeners that the spring has stopped when .stop() is called mid-simulation", () => {
+    const spring = new Spring({
+      toValue: 1
+    });
+
+    const onStopCallback = jest.fn();
+    spring
+      .onStop(s => {
+        onStopCallback(s);
+        expect(s.currentVelocity).toBeCloseTo(0.00165009062976268, 0.001);
+      })
+      .start();
+
+    jest.runTimersToTime(1000 / 60 * 10);
+
+    spring.stop();
+    expect(spring.isAtRest).toBeFalsy();
+    expect(onStopCallback).toHaveBeenCalledWith(spring);
+
+    jest.runTimersToTime(1000 / 60 * 1);
+
+    expect(onStopCallback).toHaveBeenCalledTimes(1);
+  });
+
   function _measureSpringDynamics(spring: Spring, numFrames: number) {
     const values = [];
     const velocities = [];
