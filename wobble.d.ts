@@ -33,9 +33,9 @@ export class Spring {
   readonly currentVelocity: number;
   
   /**
-   * If the spring has reached its toValue, or if its velocity is below the 
-   * restVelocityThreshold, it is considered at rest. If `stop()` is called during 
-   * a simulation, both isAnimating and isAtRest will be false.
+   * If the spring has reached its `toValue`, or if its velocity is below the
+   * `restVelocityThreshold`, it is considered at rest. If `stop()` is called
+   * during a simulation, both `isAnimating` and `isAtRest` will be false.
    */
   readonly isAtRest: boolean;
   
