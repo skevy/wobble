@@ -130,8 +130,8 @@ export class Spring {
 
   /**
    * Whether or not the spring is currently emitting values.
-   * 
-   * Note: this is distinct from whether or not it is at rest. 
+   *
+   * Note: this is distinct from whether or not it is at rest.
    * See also `isAtRest`.
    */
   get isAnimating(): boolean {
@@ -146,8 +146,11 @@ export class Spring {
     // When we update the spring config, we reset the simulation to ensure the
     // spring always moves the full distance between `fromValue` and `toValue`.
     // To ensure that the simulation behaves correctly if those values aren't
-    // being changed in `updatedConfig`, we default `fromValue` and
-    // `initialVelocity` to their current values.
+    // being changed in `updatedConfig`, we run the simulation with `_step()`
+    // and default `fromValue` and `initialVelocity` to their current values.
+
+    this._step(performance.now());
+
     const baseConfig = {
       fromValue: this._currentValue,
       initialVelocity: this._currentVelocity
@@ -227,18 +230,29 @@ export class Spring {
   }
 
   _step(timestamp: number) {
-    if (!this._currentTime) {
-      this._currentTime = timestamp;
-    }
-
-    const deltaTime = timestamp - this._currentTime;
-    this._evaluateSpring(deltaTime);
-
-    this._currentTime = timestamp;
+    // `_step` updates `_currentTime` and dispatches `onUpdate`.  Because of
+    // these side effects, it's only safe to call when an animation is already
+    // in-progress.
     if (this._isAnimating) {
-      this._currentAnimationStep = requestAnimationFrame((t: number) =>
-        this._step(t)
-      );
+      const firstStep = this._currentTime === 0;
+      if (firstStep) {
+        this._currentTime = timestamp;
+      }
+
+      const deltaTime = timestamp - this._currentTime;
+
+      if (deltaTime || firstStep) {
+        this._evaluateSpring(deltaTime);
+        this._currentTime = timestamp;
+
+        // check `_isAnimating` again, in case `stop()` got called during
+        // `evaluateSpring()`
+        if (this._isAnimating) {
+          this._currentAnimationStep = requestAnimationFrame((t: number) =>
+            this._step(t)
+          );
+        }
+      }
     }
   }
 
