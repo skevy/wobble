@@ -30,4 +30,13 @@
     window.cancelAnimationFrame = function(id) {
       clearTimeout(id);
     };
+
+  if (!window.performance)
+    window.performance = {
+      now() {
+        // Using rAF polyfill's `lastTime` to ensure that timestamp passed into
+        // rAF's callback and `performance.now()` are on the same timescale.
+        return lastTime;
+      }
+    };
 })();
