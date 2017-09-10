@@ -101,8 +101,8 @@ describe("Spring", () => {
     } = _measureSpringDynamics(spring, 60);
 
     // Get the expected values/velocities after 10 frames
-    const expectedValuesAfterUpdate = expectedValues.slice(9);
-    const expectedVelocitiesAfterUpdate = expectedVelocities.slice(9);
+    const expectedValuesAfterUpdate = expectedValues.slice(10);
+    const expectedVelocitiesAfterUpdate = expectedVelocities.slice(10);
 
     valuesAfterUpdate.forEach((val, i) => {
       expect(val).toBeCloseTo(expectedValuesAfterUpdate[i], 0.00000001);
@@ -173,7 +173,7 @@ describe("Spring", () => {
     } = _measureSpringDynamics(spring, 60);
 
     // Expect spring to be at rest with new values
-    expect(valuesAfterUpdate[0]).toBe(expectedValues[9]); // first frame should be the same position as ending frame
+    expect(valuesAfterUpdate[0]).toBe(expectedValues[10]); // first frame should be the same position as ending frame
     expect(valuesAfterUpdate[1]).toBeGreaterThan(2000); // should go to a really high number
     expect(velocitiesAfterUpdate[0]).toBe(200);
     expect(velocitiesAfterUpdate[8]).toBeLessThan(0); // given the spring dynamics, v should go negative pretty quickly
