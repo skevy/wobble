@@ -80,8 +80,8 @@ export class Spring {
       this._isAnimating = true;
 
       if (!this._currentAnimationStep) {
+        this._notifyListeners("onStart");
         this._currentAnimationStep = requestAnimationFrame((t: number) => {
-          this._notifyListeners("onStart");
           this._step(t);
         });
       }

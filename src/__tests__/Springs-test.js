@@ -197,6 +197,20 @@ describe("Spring", () => {
     expect(spring._listeners).toEqual([]);
   });
 
+  it("notifies listeners that the spring has started synchronously when .start() is called", () => {
+    const onStartCallback = jest.fn();
+
+    const spring = new Spring({
+      toValue: 1
+    });
+    spring.onStart(onStartCallback);
+
+    // notice that no time has passed (runTimersToTime has not been called)
+    spring.start();
+
+    expect(onStartCallback).toHaveBeenCalledTimes(1);
+  });
+
   it("notifies listeners that the spring has stopped when .stop() is called mid-simulation", () => {
     const spring = new Spring({
       toValue: 1
