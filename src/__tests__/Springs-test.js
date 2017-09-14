@@ -235,6 +235,26 @@ describe("Spring", () => {
     expect(onStopCallback).toHaveBeenCalledTimes(1);
   });
 
+  it("should only call onUpdate once per frame", () => {
+    const onUpdateListener = jest.fn();
+    const onStopListener = jest.fn();
+
+    const spring = new Spring({ fromValue: 0, toValue: 1 });
+    spring.onUpdate(onUpdateListener);
+    spring.onStop(onStopListener);
+
+    spring.start();
+    spring.updateConfig({ toValue: 0 });
+    spring.updateConfig({ fromValue: 1 });
+
+    expect(onUpdateListener).not.toHaveBeenCalled();
+
+    jest.runTimersToTime(1000 / 60);
+
+    expect(onUpdateListener).toHaveBeenCalledTimes(1);
+    expect(onStopListener).not.toHaveBeenCalled();
+  });
+
   function _measureSpringDynamics(spring: Spring, numFrames: number) {
     const values = [];
     const velocities = [];
