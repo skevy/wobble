@@ -149,7 +149,7 @@ export class Spring {
     // being changed in `updatedConfig`, we run the simulation with `_step()`
     // and default `fromValue` and `initialVelocity` to their current values.
 
-    this._evaluateSpring(performance.now());
+    this._advanceSpringToTime(performance.now());
 
     const baseConfig = {
       fromValue: this._currentValue,
@@ -235,10 +235,10 @@ export class Spring {
    * not yet at rest.
    */
   _step(timestamp: number) {
-    this._evaluateSpring(timestamp);
+    this._advanceSpringToTime(timestamp, true);
 
     // check `_isAnimating`, in case `stop()` got called during
-    // `evaluateSpring()`
+    // `_advanceSpringToTime()`
     if (this._isAnimating) {
       this._currentAnimationStep = requestAnimationFrame((t: number) =>
         this._step(t)
@@ -246,12 +246,11 @@ export class Spring {
     }
   }
 
-  /**
-   * `_evaluateSpring` updates `_currentTime`, `_currentValue`, and
-   * `_currentVelocity` to reflect the absolute timestamp provided.
-   */
-  _evaluateSpring(timestamp: number) {
-    // `_evaluateSpring` updates `_currentTime` and triggers the listeners.
+  _advanceSpringToTime(
+    timestamp: number,
+    shouldNotifyListeners: boolean = false
+  ) {
+    // `_advanceSpringToTime` updates `_currentTime` and triggers the listeners.
     // Because of these side effects, it's only safe to call when an animation
     // is already in-progress.
     if (!this._isAnimating) {
@@ -265,7 +264,7 @@ export class Spring {
 
     let deltaTime = timestamp - this._currentTime;
 
-    if (deltaTime === 0 && !isFirstStep) {
+    if (deltaTime === 0 && !isFirstStep && !shouldNotifyListeners) {
       return;
     }
 
@@ -352,6 +351,10 @@ export class Spring {
     this._currentTime = timestamp;
     this._currentValue = oscillation;
     this._currentVelocity = velocity;
+
+    if (!shouldNotifyListeners) {
+      return;
+    }
 
     this._notifyListeners("onUpdate");
     if (!this._isAnimating) {
