@@ -198,20 +198,20 @@ describe("Spring", () => {
   });
 
   it("synchronously notifies listeners that the spring has started when .start() is called", () => {
-    const onStartCallback = jest.fn();
+    const onStartListener = jest.fn();
 
     const spring = new Spring({
       toValue: 1
     });
 
-    spring.onStart(onStartCallback);
+    spring.onStart(onStartListener);
 
     spring.start();
-    expect(onStartCallback).toHaveBeenCalledWith(spring);
+    expect(onStartListener).toHaveBeenCalledWith(spring);
   });
 
   it("synchronously notifies listeners that the spring has stopped when .stop() is called mid-animation", () => {
-    const onStopCallback = jest.fn();
+    const onStopListener = jest.fn();
 
     const spring = new Spring({
       toValue: 1
@@ -219,7 +219,7 @@ describe("Spring", () => {
 
     spring
       .onStop(s => {
-        onStopCallback(s);
+        onStopListener(s);
         expect(s.currentVelocity).toBeCloseTo(0.00165009062976268, 0.001);
       })
       .start();
@@ -227,12 +227,12 @@ describe("Spring", () => {
     jest.runTimersToTime(1000 / 60 * 10);
 
     spring.stop();
-    expect(onStopCallback).toHaveBeenCalledWith(spring);
+    expect(onStopListener).toHaveBeenCalledWith(spring);
     expect(spring.isAtRest).toBeFalsy();
 
     jest.runTimersToTime(1000 / 60 * 1);
 
-    expect(onStopCallback).toHaveBeenCalledTimes(1);
+    expect(onStopListener).toHaveBeenCalledTimes(1);
   });
 
   it("should only call onUpdate once per frame", () => {
