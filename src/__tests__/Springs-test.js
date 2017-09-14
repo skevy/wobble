@@ -210,7 +210,7 @@ describe("Spring", () => {
     expect(onStartCallback).toHaveBeenCalledWith(spring);
   });
 
-  it("synchronously notifies listeners that the spring has stopped when .stop() is called mid-simulation", () => {
+  it("synchronously notifies listeners that the spring has stopped when .stop() is called mid-animation", () => {
     const onStopCallback = jest.fn();
 
     const spring = new Spring({
@@ -233,6 +233,42 @@ describe("Spring", () => {
     jest.runTimersToTime(1000 / 60 * 1);
 
     expect(onStopCallback).toHaveBeenCalledTimes(1);
+  });
+
+  it("should only call onUpdate once per frame", () => {
+    const onUpdateListener = jest.fn();
+    const onStopListener = jest.fn();
+
+    const spring = new Spring({ fromValue: 0, toValue: 1 });
+    spring.onUpdate(onUpdateListener);
+    spring.onStop(onStopListener);
+
+    spring.start();
+    spring.updateConfig({ toValue: 0 });
+    spring.updateConfig({ fromValue: 1 });
+
+    expect(onUpdateListener).not.toHaveBeenCalled();
+
+    jest.runTimersToTime(1000 / 60);
+
+    expect(onUpdateListener).toHaveBeenCalledTimes(1);
+    expect(onStopListener).not.toHaveBeenCalled();
+  });
+
+  it("should call onStop on the next frame if fromValue and toValue are updated to match during the animation", () => {
+    const onStopListener = jest.fn();
+
+    const spring = new Spring({ fromValue: 0, toValue: 1 });
+    spring.onStop(onStopListener);
+
+    spring.start();
+
+    jest.runTimersToTime(1000 / 60);
+    spring.updateConfig({ fromValue: 1, initialVelocity: 0 });
+    expect(onStopListener).not.toHaveBeenCalled();
+
+    jest.runTimersToTime(1000 / 60);
+    expect(onStopListener).toHaveBeenCalled();
   });
 
   function _measureSpringDynamics(spring: Spring, numFrames: number) {
