@@ -149,7 +149,7 @@ export class Spring {
     // being changed in `updatedConfig`, we run the simulation with `_step()`
     // and default `fromValue` and `initialVelocity` to their current values.
 
-    this._step(performance.now());
+    this._evaluateSpring(performance.now());
 
     const baseConfig = {
       fromValue: this._currentValue,
@@ -229,10 +229,31 @@ export class Spring {
     });
   }
 
+  /**
+   * `_step` is the main loop.  While the animation is running, it updates the
+   * current state once per frame, and schedules the next frame if the spring is
+   * not yet at rest.
+   */
   _step(timestamp: number) {
-    // `_step` updates `_currentTime` and dispatches `onUpdate`.  Because of
-    // these side effects, it's only safe to call when an animation is already
-    // in-progress.
+    this._evaluateSpring(timestamp);
+
+    // check `_isAnimating`, in case `stop()` got called during
+    // `evaluateSpring()`
+    if (this._isAnimating) {
+      this._currentAnimationStep = requestAnimationFrame((t: number) =>
+        this._step(t)
+      );
+    }
+  }
+
+  /**
+   * `_evaluateSpring` updates `_currentTime`, `_currentValue`, and
+   * `_currentVelocity` to reflect the absolute timestamp provided.
+   */
+  _evaluateSpring(timestamp: number) {
+    // `_evaluateSpring` updates `_currentTime` and triggers the listeners.
+    // Because of these side effects, it's only safe to call when an animation
+    // is already in-progress.
     if (!this._isAnimating) {
       return;
     }
@@ -242,23 +263,12 @@ export class Spring {
       this._currentTime = timestamp;
     }
 
-    const deltaTime = timestamp - this._currentTime;
+    let deltaTime = timestamp - this._currentTime;
 
-    if (deltaTime || isFirstStep) {
-      this._evaluateSpring(deltaTime);
-      this._currentTime = timestamp;
-
-      // check `_isAnimating` again, in case `stop()` got called during
-      // `evaluateSpring()`
-      if (this._isAnimating) {
-        this._currentAnimationStep = requestAnimationFrame((t: number) =>
-          this._step(t)
-        );
-      }
+    if (deltaTime === 0 && !isFirstStep) {
+      return;
     }
-  }
 
-  _evaluateSpring(deltaTime: number) {
     // If for some reason we lost a lot of frames (e.g. process large payload or
     // stopped in the debugger), we only advance by 4 frames worth of
     // computation and will continue on the next frame. It's better to have it
@@ -339,6 +349,7 @@ export class Spring {
           omega2;
     }
 
+    this._currentTime = timestamp;
     this._currentValue = oscillation;
     this._currentVelocity = velocity;
 
