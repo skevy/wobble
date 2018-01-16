@@ -31,18 +31,18 @@ export class Spring {
    * The spring's current velocity.
    */
   readonly currentVelocity: number;
-  
+
   /**
    * If the spring has reached its `toValue`, or if its velocity is below the
    * `restVelocityThreshold`, it is considered at rest. If `stop()` is called
    * during a simulation, both `isAnimating` and `isAtRest` will be false.
    */
   readonly isAtRest: boolean;
-  
+
   /**
    * Whether or not the spring is currently emitting values.
-   * 
-   * Note: this is distinct from whether or not it is at rest. 
+   *
+   * Note: this is distinct from whether or not it is at rest.
    * See also `isAtRest`.
    */
   readonly isAnimating: boolean;
@@ -53,42 +53,42 @@ export class Spring {
    * If `fromValue` differs from `toValue`, or `initialVelocity` is non-zero,
    * start the simulation and call the `onStart` listeners.
    */
-  start(): Spring;
+  start(): this;
 
   /**
    * If a simulation is in progress, stop it and call the `onStop` listeners.
    */
-  stop(): Spring;
+  stop(): this;
 
   /**
    * Updates the spring config with the given values.  Values not explicitly
    * supplied will be reused from the existing config.
    */
-  updateConfig(updatedConfig: PartialSpringConfig): Spring;
+  updateConfig(updatedConfig: PartialSpringConfig): this;
 
   /**
    * The provided callback will be invoked when the simulation begins.
    */
-  onStart(listener: SpringListener): Spring;
+  onStart(listener: SpringListener): this;
 
   /**
    * The provided callback will be invoked on each frame while the simulation is
    * running.
    */
-  onUpdate(listener: SpringListener): Spring;
+  onUpdate(listener: SpringListener): this;
 
   /**
    * The provided callback will be invoked when the simulation ends.
    */
-  onStop(listener: SpringListener): Spring;
-  
+  onStop(listener: SpringListener): this;
+
   /**
    * Remove a single listener from this spring.
    */
-  removeListener(listener: SpringListener): Spring;
-  
+  removeListener(listener: SpringListener): this;
+
   /**
    * Removes all listeners from this spring.
    */
-  removeAllListeners(): Spring
+  removeAllListeners(): this;
 }
