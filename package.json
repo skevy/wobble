@@ -1,6 +1,6 @@
 {
   "name": "wobble",
-  "version": "1.3.1",
+  "version": "1.4.0",
   "description": "Wobble is a tiny spring simulation library based on the equations of motion governing damped harmonic oscillators.",
   "repository": "https://github.com/skevy/wobble",
   "author": "Adam Miskiewicz <adam@sk3vy.com>",
