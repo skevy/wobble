@@ -5,6 +5,10 @@
 
 A tiny (~1.7 KB gzipped) spring physics micro-library that models a [damped harmonic oscillator](https://en.wikipedia.org/wiki/Harmonic_oscillator#Damped_harmonic_oscillator).
 
+# Why Would I Use This?
+
+Use _wobble_ if you need a very small and accurate damped harmonic spring simulation in your animation library or application. _wobble_ intentionally **only** provides a way to animate a scalar value according to equations governing damped harmonic motion. That's all this library will ever do -- any other functionality (integration with [insert ui library here], multi-dimensional springs, a nice API around chaining springs together, etc.) is left to the reader to implement.
+
 # Background
 
 Using spring physics in UI design is a common way to express natural motion, and there are several ways to model the physics behind springs.
