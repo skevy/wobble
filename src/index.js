@@ -3,8 +3,9 @@
  *
  *  Use of this source code is governed by a MIT-style license that can be found
  *  in the LICENSE file or at https://opensource.org/licenses/MIT.
+ *
+ *  @flow
  */
-// @flow
 
 import { invariant, withDefault } from "./utils";
 
@@ -15,10 +16,10 @@ type SpringConfig = {
   damping: number, // Defines how the spring’s motion should be damped due to the forces of friction.
   mass: number, // The mass of the object attached to the end of the spring.
   initialVelocity: number, // The initial velocity (in units/ms) of the object attached to the spring.
-  allowsOverdamping: boolean,
-  overshootClamping: boolean,
-  restVelocityThreshold: number,
-  restDisplacementThreshold: number
+  allowsOverdamping: boolean, // Whether or not the spring allows "overdamping" (a damping ratio > 1). Defaults to false.
+  overshootClamping: boolean, // False when overshooting is allowed, true when it is not. Defaults to false.
+  restVelocityThreshold: number, // When spring's velocity is below `restVelocityThreshold`, it is at rest. Defaults to .001.
+  restDisplacementThreshold: number // When the spring's displacement (current value) is below `restDisplacementThreshold`, it is at rest. Defaults to .001.
 };
 
 type PartialSpringConfig = $Shape<SpringConfig>;
