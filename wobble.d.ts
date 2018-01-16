@@ -53,18 +53,18 @@ export class Spring {
    * If `fromValue` differs from `toValue`, or `initialVelocity` is non-zero,
    * start the simulation and call the `onStart` listeners.
    */
-  start(): void;
+  start(): Spring;
 
   /**
    * If a simulation is in progress, stop it and call the `onStop` listeners.
    */
-  stop(): void;
+  stop(): Spring;
 
   /**
    * Updates the spring config with the given values.  Values not explicitly
    * supplied will be reused from the existing config.
    */
-  updateConfig(updatedConfig: PartialSpringConfig): void;
+  updateConfig(updatedConfig: PartialSpringConfig): Spring;
 
   /**
    * The provided callback will be invoked when the simulation begins.
