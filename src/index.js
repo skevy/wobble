@@ -73,7 +73,7 @@ export class Spring {
    * If `fromValue` differs from `toValue`, or `initialVelocity` is non-zero,
    * start the simulation and call the `onStart` listeners.
    */
-  start() {
+  start(): Spring {
     const { fromValue, toValue, initialVelocity } = this._config;
 
     if (fromValue !== toValue || initialVelocity !== 0) {
@@ -87,14 +87,16 @@ export class Spring {
         });
       }
     }
+
+    return this;
   }
 
   /**
    * If a simulation is in progress, stop it and call the `onStop` listeners.
    */
-  stop() {
+  stop(): Spring {
     if (!this._isAnimating) {
-      return;
+      return this;
     }
 
     this._isAnimating = false;
@@ -104,6 +106,8 @@ export class Spring {
       cancelAnimationFrame(this._currentAnimationStep);
       this._currentAnimationStep = 0;
     }
+
+    return this;
   }
 
   /**
@@ -143,7 +147,7 @@ export class Spring {
    * Updates the spring config with the given values.  Values not explicitly
    * supplied will be reused from the existing config.
    */
-  updateConfig(updatedConfig: PartialSpringConfig): void {
+  updateConfig(updatedConfig: PartialSpringConfig): Spring {
     // When we update the spring config, we reset the simulation to ensure the
     // spring always moves the full distance between `fromValue` and `toValue`.
     // To ensure that the simulation behaves correctly if those values aren't
@@ -164,6 +168,8 @@ export class Spring {
     };
 
     this._reset();
+
+    return this;
   }
 
   /**
