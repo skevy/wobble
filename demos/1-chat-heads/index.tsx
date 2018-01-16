@@ -1,24 +1,32 @@
-/**
- * @flow
- */
-
-import React from "react";
-import ReactDOM from "react-dom";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
 
 import { Spring } from "wobble";
 
-// $FlowFixMe
+// @ts-ignore
 import * as images from "./*.jpg";
 
-const INITIAL_X = 250,
-  INITIAL_Y = 300;
+const INITIAL_X = 250;
+const INITIAL_Y = 300;
+
+interface IBall {
+  x: number;
+  y: number;
+}
+
+interface IBallSpring {
+  x: Spring;
+  y: Spring;
+}
 
 class ChatHeads extends React.Component {
-  balls = Array(6).fill([]).map(() => ({ x: INITIAL_X, y: INITIAL_Y }));
+  public balls: IBall[] = Array(6)
+    .fill([])
+    .map(() => ({ x: INITIAL_X, y: INITIAL_Y }));
 
-  springs = [];
+  public springs: IBallSpring[] = [];
 
-  componentDidMount() {
+  public componentDidMount() {
     window.addEventListener("mousemove", this.handleMouseMove);
     window.addEventListener("touchmove", this.handleTouchMove);
     this.createFollowerSprings();
@@ -26,7 +34,7 @@ class ChatHeads extends React.Component {
     this.springs[0].y.start();
   }
 
-  render() {
+  public render() {
     return (
       <div
         style={{
@@ -36,7 +44,7 @@ class ChatHeads extends React.Component {
           background: "#EEE"
         }}
       >
-        {this.balls.map(({ x, y }, i) =>
+        {this.balls.map(({ x, y }, i) => (
           <div
             key={i}
             style={{
@@ -52,12 +60,12 @@ class ChatHeads extends React.Component {
               zIndex: this.balls.length - i
             }}
           />
-        )}
+        ))}
       </div>
     );
   }
 
-  createFollowerSprings() {
+  public createFollowerSprings() {
     const springConfig = {
       stiffness: 120,
       damping: 14,
@@ -65,12 +73,12 @@ class ChatHeads extends React.Component {
     };
     // Follower springs
     for (let i = 0; i < this.balls.length - 1; i++) {
-      let x = new Spring({
+      const x = new Spring({
         ...springConfig,
         fromValue: 0,
         toValue: INITIAL_X
       }).onUpdate(s => this.onSpringUpdate(i, "x", s));
-      let y = new Spring({
+      const y = new Spring({
         ...springConfig,
         fromValue: 0,
         toValue: INITIAL_Y
@@ -79,7 +87,7 @@ class ChatHeads extends React.Component {
     }
   }
 
-  onSpringUpdate = (i: number, dim: "x" | "y", s: Spring) => {
+  public onSpringUpdate = (i: number, dim: "x" | "y", s: Spring) => {
     const val = s.currentValue;
     this.balls[i + 1][dim] = val;
     if (i < this.balls.length - 2) {
@@ -92,7 +100,13 @@ class ChatHeads extends React.Component {
     this.forceUpdate();
   };
 
-  handleMouseMove = ({ pageX: x, pageY: y }) => {
+  public handleMouseMove = ({
+    pageX: x,
+    pageY: y
+  }: {
+    pageX: number;
+    pageY: number;
+  }) => {
     this.balls[0].x = x;
     this.balls[0].y = y;
     this.springs[0].x
@@ -107,7 +121,7 @@ class ChatHeads extends React.Component {
       .start();
   };
 
-  handleTouchMove = ({ touches }) => {
+  public handleTouchMove = ({ touches }: TouchEvent) => {
     this.handleMouseMove(touches[0]);
   };
 }

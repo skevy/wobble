@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "jsx": "react",
+    "sourceMap": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "target": "esnext",
+    "pretty": true,
+    "declaration": true,
+    "outDir": "./dist/module"
+  },
+  "exclude": [
+    "dist",
+    "demos",
+    "node_modules"
+  ]
+}

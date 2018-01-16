@@ -1,16 +1,13 @@
-/** @license
+/**
+ * @license
  *  Copyright 2017 Adam Miskiewicz
  *
  *  Use of this source code is governed by a MIT-style license that can be found
  *  in the LICENSE file or at https://opensource.org/licenses/MIT.
- *  
- *  @flow
  */
 
-import lolex from "lolex";
+import * as lolex from "lolex";
 import { Spring } from "../";
-
-let clock;
 
 describe("Spring", () => {
   it("animates correctly with base values", () => {
@@ -96,9 +93,7 @@ describe("Spring", () => {
   });
 
   it("keeps proper dynamics when the config is updated during the animation", () => {
-    const clock = lolex.install({
-      global: global
-    });
+    const clock = lolex.install();
 
     const spring = new Spring({
       fromValue: 25,
@@ -323,9 +318,9 @@ describe("Spring", () => {
     const velocities = [spring.currentVelocity];
 
     spring
-      .onUpdate(spring => {
-        values.push(spring.currentValue);
-        velocities.push(spring.currentVelocity);
+      .onUpdate(s => {
+        values.push(s.currentValue);
+        velocities.push(s.currentVelocity);
       })
       .start();
 

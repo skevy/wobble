@@ -2,19 +2,35 @@
 import resolve from "rollup-plugin-node-resolve";
 import commonjs from "rollup-plugin-commonjs";
 import babel from "rollup-plugin-babel";
+import typescript from "rollup-plugin-typescript2";
 import uglify from "rollup-plugin-uglify";
 import { minify } from "uglify-es";
 
 const base = {
-  entry: "src/index.js",
-  plugins: [resolve(), commonjs()]
+  input: "src/index.ts",
+  plugins: [resolve()]
 };
 
+const CACHE_ROOT = `${require("temp-dir")}/.rpt2_cache_${process.env
+  .ROLLUP_CONFIG}`;
+
 const browser = Object.assign({}, base, {
-  sourceMap: true,
-  moduleName: "Wobble",
+  output: {
+    name: "Wobble",
+    sourcemap: true
+  },
   plugins: [
     ...base.plugins,
+    typescript({
+      cacheRoot: CACHE_ROOT,
+      tsconfigOverride: {
+        compilerOptions: {
+          declaration: false,
+        }
+      },
+      typescript: require("typescript"),
+    }),
+    commonjs(),
     babel({
       exclude: "node_modules/**", // only transpile our source code
       babelrc: false,
@@ -30,17 +46,29 @@ const browser = Object.assign({}, base, {
         ],
         "stage-0"
       ],
-      plugins: ["external-helpers", "transform-flow-strip-types"]
+      plugins: ["external-helpers"]
     }),
     uglify({}, minify)
   ]
 });
 
 const es = Object.assign({}, base, {
-  format: "es",
-  sourceMap: true,
+  output: {
+    format: "es",
+    sourcemap: true
+  },
   plugins: [
     ...base.plugins,
+    typescript({
+      cacheRoot: CACHE_ROOT,
+      tsconfigOverride: {
+        compilerOptions: {
+          declaration: false,
+        }
+      },
+      typescript: require("typescript"),
+    }),
+    commonjs(),
     babel({
       exclude: "node_modules/**", // only transpile our source code
       babelrc: false,
@@ -56,7 +84,7 @@ const es = Object.assign({}, base, {
         ],
         "stage-0"
       ],
-      plugins: ["external-helpers", "transform-flow-strip-types"]
+      plugins: ["external-helpers"]
     }),
     uglify({}, minify)
   ]
@@ -64,6 +92,7 @@ const es = Object.assign({}, base, {
 
 let config;
 switch (process.env.ROLLUP_CONFIG) {
+  case "cjs":
   case "browser":
     config = browser;
     break;

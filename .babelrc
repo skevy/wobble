@@ -1,13 +1,13 @@
 {
   "presets": [
-    ["env", {
-      "targets": {
-        "node": true
+    [
+      "env",
+      {
+        "targets": {
+          "node": true
+        }
       }
-    }],
+    ],
     "stage-0"
-  ],
-  "plugins": [
-    "transform-flow-strip-types"
   ]
 }
