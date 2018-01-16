@@ -6,6 +6,7 @@
   "author": "Adam Miskiewicz <adam@sk3vy.com>",
   "license": "MIT",
   "main": "./dist/module/index.js",
+  "module": "./dist/index.es.js",
   "types": "./dist/module/index.d.ts",
   "scripts": {
     "dev": "concurrently \"yarn watch\" \"cd demos && yarn start\"",
