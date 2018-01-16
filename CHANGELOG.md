@@ -1,5 +1,10 @@
 # CHANGELOG
 
+### v1.5.0
+
+- Fixup `yarn watch` to support es module compilation ([f7dd689](https://github.com/skevy/wobble/commit/f7dd68951e0f2cd8a083706c9727b1906d3b6e03))
+- Add module entry point for .es.js dist ([0b929acf](https://github.com/skevy/wobble/commit/0b929acf6ba3a443b974a1c350213a3d64ff45cc))
+
 ### v1.4.1
 
 - Remove Babel ([cfdc3d85](https://github.com/skevy/wobble/commit/cfdc3d85ce01687b77c44cc68d11cabc85ffe0a3))
