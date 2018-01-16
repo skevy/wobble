@@ -5,7 +5,7 @@ machine:
 
 dependencies:
   override:
-    - yarn
+    - yarn && cd demos/ && yarn
   cache_directories:
     - ~/.cache/yarn
 
