@@ -11,7 +11,7 @@ dependencies:
 
 test:
   override:
-    - yarn test
+    - yarn build && yarn test
 
 # From http://codereview.cc/harbormaster/step/edit/6/
 notify:
