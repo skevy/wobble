@@ -1,5 +1,10 @@
 # CHANGELOG
 
+### v1.4.1
+
+- Remove Babel ([cfdc3d85](https://github.com/skevy/wobble/commit/cfdc3d85ce01687b77c44cc68d11cabc85ffe0a3))
+- Fixup typescript interface names and member access ([2112b118](https://github.com/skevy/wobble/commit/2112b118fbb491113ec0432d9080b7f7acfc2bd5))
+
 ### v1.4.0
 
 - Remove Flow, rewrite in TypeScript ([a85aa77](https://github.com/skevy/wobble/commit/a85aa771843ec9a9ddf7d3d187dc4c2e5ff5a1b6))
