@@ -1,5 +1,10 @@
 # CHANGELOG
 
+### v1.3.1
+
+- Fix types for chainable methods ([bd7b496](https://github.com/skevy/wobble/commit/bd7b49622805b9bc218c87017ea92d3cb35d623f))
+- Use lolex in tests to properly fake timers ([3cb1e92](https://github.com/skevy/wobble/commit/3cb1e92729eb7948776f4548f9e86a4bad4c3077))
+
 ### v1.3.0
 
 - Update TypeScript definition with chainable API ([0c9bb96](https://github.com/skevy/wobble/commit/0c9bb96eb66c716d4d3b057bb366d593ea9bc79e))
