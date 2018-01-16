@@ -8,7 +8,7 @@
 
 import { invariant, withDefault } from "./utils";
 
-export interface ISpringConfig {
+export interface SpringConfig {
   fromValue: number; // Starting value of the animation.
   toValue: number; // Ending value of the animation.
   stiffness: number; // The spring stiffness coefficient.
@@ -21,10 +21,10 @@ export interface ISpringConfig {
   restDisplacementThreshold: number; // When the spring's displacement (current value) is below `restDisplacementThreshold`, it is at rest. Defaults to .001.
 }
 
-export type PartialSpringConfig = Partial<ISpringConfig>;
+export type PartialSpringConfig = Partial<SpringConfig>;
 
 export type SpringListenerFn = (spring: Spring) => void;
-export interface ISpringListener {
+export interface SpringListener {
   onUpdate?: SpringListenerFn;
   onStart?: SpringListenerFn;
   onStop?: SpringListenerFn;
@@ -35,11 +35,11 @@ export interface ISpringListener {
  * damped harmonic oscillators (https://en.wikipedia.org/wiki/Harmonic_oscillator#Damped_harmonic_oscillator).
  */
 export class Spring {
-  public static MAX_DELTA_TIME_MS = 1 / 60 * 1000 * 4; // advance 4 frames at max
+  static MAX_DELTA_TIME_MS = 1 / 60 * 1000 * 4; // advance 4 frames at max
 
-  public _listeners: ISpringListener[] = [];
+  _listeners: SpringListener[] = [];
 
-  private _config: ISpringConfig;
+  private _config: SpringConfig;
   private _currentAnimationStep: number = 0; // current requestAnimationFrame
 
   private _currentTime: number = 0; // Current timestamp of animation in ms (real time)
@@ -75,7 +75,7 @@ export class Spring {
    * If `fromValue` differs from `toValue`, or `initialVelocity` is non-zero,
    * start the simulation and call the `onStart` listeners.
    */
-  public start(): this {
+  start(): this {
     const { fromValue, toValue, initialVelocity } = this._config;
 
     if (fromValue !== toValue || initialVelocity !== 0) {
@@ -96,7 +96,7 @@ export class Spring {
   /**
    * If a simulation is in progress, stop it and call the `onStop` listeners.
    */
-  public stop(): this {
+  stop(): this {
     if (!this._isAnimating) {
       return this;
     }
@@ -149,7 +149,7 @@ export class Spring {
    * Updates the spring config with the given values.  Values not explicitly
    * supplied will be reused from the existing config.
    */
-  public updateConfig(updatedConfig: PartialSpringConfig): this {
+  updateConfig(updatedConfig: PartialSpringConfig): this {
     // When we update the spring config, we reset the simulation to ensure the
     // spring always moves the full distance between `fromValue` and `toValue`.
     // To ensure that the simulation behaves correctly if those values aren't
@@ -177,7 +177,7 @@ export class Spring {
   /**
    * The provided callback will be invoked when the simulation begins.
    */
-  public onStart(listener: SpringListenerFn): this {
+  onStart(listener: SpringListenerFn): this {
     this._listeners.push({ onStart: listener });
     return this;
   }
@@ -186,7 +186,7 @@ export class Spring {
    * The provided callback will be invoked on each frame while the simulation is
    * running.
    */
-  public onUpdate(listener: SpringListenerFn): this {
+  onUpdate(listener: SpringListenerFn): this {
     this._listeners.push({ onUpdate: listener });
     return this;
   }
@@ -194,7 +194,7 @@ export class Spring {
   /**
    * The provided callback will be invoked when the simulation ends.
    */
-  public onStop(listener: SpringListenerFn): this {
+  onStop(listener: SpringListenerFn): this {
     this._listeners.push({ onStop: listener });
     return this;
   }
@@ -202,7 +202,7 @@ export class Spring {
   /**
    * Remove a single listener from this spring.
    */
-  public removeListener(listenerFn: SpringListenerFn): this {
+  removeListener(listenerFn: SpringListenerFn): this {
     this._listeners = this._listeners.reduce(
       (result, listener) => {
         const foundListenerFn =
@@ -212,7 +212,7 @@ export class Spring {
         }
         return result;
       },
-      [] as ISpringListener[]
+      [] as SpringListener[]
     );
     return this;
   }
@@ -220,20 +220,20 @@ export class Spring {
   /**
    * Removes all listeners from this spring.
    */
-  public removeAllListeners(): this {
+  removeAllListeners(): this {
     this._listeners = [];
     return this;
   }
 
-  public _reset() {
+  private _reset() {
     this._currentTime = Date.now();
     this._springTime = 0.0;
     this._currentValue = this._config.fromValue;
     this._currentVelocity = this._config.initialVelocity;
   }
 
-  public _notifyListeners(eventName: keyof ISpringListener) {
-    this._listeners.forEach((listener: ISpringListener) => {
+  private _notifyListeners(eventName: keyof SpringListener) {
+    this._listeners.forEach((listener: Partial<SpringListener>) => {
       const maybeListenerFn = listener[eventName];
       if (typeof maybeListenerFn === "function") {
         maybeListenerFn(this);
@@ -246,7 +246,7 @@ export class Spring {
    * current state once per frame, and schedules the next frame if the spring is
    * not yet at rest.
    */
-  public _step(timestamp: number) {
+  private _step(timestamp: number) {
     this._advanceSpringToTime(timestamp, true);
 
     // check `_isAnimating`, in case `stop()` got called during
@@ -258,7 +258,7 @@ export class Spring {
     }
   }
 
-  public _advanceSpringToTime(
+  private _advanceSpringToTime(
     timestamp: number,
     shouldNotifyListeners: boolean = false
   ) {
@@ -381,7 +381,7 @@ export class Spring {
     }
   }
 
-  public _isSpringOvershooting() {
+  private _isSpringOvershooting() {
     const { stiffness, fromValue, toValue, overshootClamping } = this._config;
     let isOvershooting = false;
     if (overshootClamping && stiffness !== 0) {
@@ -394,7 +394,7 @@ export class Spring {
     return isOvershooting;
   }
 
-  public _isSpringAtRest() {
+  private _isSpringAtRest() {
     const {
       stiffness,
       toValue,

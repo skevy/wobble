@@ -9,13 +9,21 @@
     "tslint-plugin-prettier"
   ],
   "rules": {
-    "prettier": true,
+    "interface-name": [
+      true,
+      "never-prefix"
+    ],
+    "member-access": [
+      true,
+      "no-public"
+    ],
     "no-empty": false,
     "no-implicit-dependencies": [
       true,
       "dev"
     ],
     "object-literal-sort-keys": false,
+    "prettier": true,
     "prefer-conditional-expression": false,
     "variable-name": [
       true,

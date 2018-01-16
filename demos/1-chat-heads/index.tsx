@@ -9,24 +9,24 @@ import * as images from "./*.jpg";
 const INITIAL_X = 250;
 const INITIAL_Y = 300;
 
-interface IBall {
+interface Ball {
   x: number;
   y: number;
 }
 
-interface IBallSpring {
+interface BallSpring {
   x: Spring;
   y: Spring;
 }
 
 class ChatHeads extends React.Component {
-  public balls: IBall[] = Array(6)
+  balls: Ball[] = Array(6)
     .fill([])
     .map(() => ({ x: INITIAL_X, y: INITIAL_Y }));
 
-  public springs: IBallSpring[] = [];
+  springs: BallSpring[] = [];
 
-  public componentDidMount() {
+  componentDidMount() {
     window.addEventListener("mousemove", this.handleMouseMove);
     window.addEventListener("touchmove", this.handleTouchMove);
     this.createFollowerSprings();
@@ -34,7 +34,7 @@ class ChatHeads extends React.Component {
     this.springs[0].y.start();
   }
 
-  public render() {
+  render() {
     return (
       <div
         style={{
@@ -65,7 +65,7 @@ class ChatHeads extends React.Component {
     );
   }
 
-  public createFollowerSprings() {
+  createFollowerSprings() {
     const springConfig = {
       stiffness: 120,
       damping: 14,
@@ -87,7 +87,7 @@ class ChatHeads extends React.Component {
     }
   }
 
-  public onSpringUpdate = (i: number, dim: "x" | "y", s: Spring) => {
+  onSpringUpdate = (i: number, dim: "x" | "y", s: Spring) => {
     const val = s.currentValue;
     this.balls[i + 1][dim] = val;
     if (i < this.balls.length - 2) {
@@ -100,7 +100,7 @@ class ChatHeads extends React.Component {
     this.forceUpdate();
   };
 
-  public handleMouseMove = ({
+  handleMouseMove = ({
     pageX: x,
     pageY: y
   }: {
@@ -121,7 +121,7 @@ class ChatHeads extends React.Component {
       .start();
   };
 
-  public handleTouchMove = ({ touches }: TouchEvent) => {
+  handleTouchMove = ({ touches }: TouchEvent) => {
     this.handleMouseMove(touches[0]);
   };
 }
