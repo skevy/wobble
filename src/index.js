@@ -221,7 +221,7 @@ export class Spring {
   }
 
   _reset() {
-    this._currentTime = 0.0;
+    this._currentTime = performance.now();
     this._springTime = 0.0;
     this._currentValue = this._config.fromValue;
     this._currentVelocity = this._config.initialVelocity;
@@ -262,11 +262,6 @@ export class Spring {
     // is already in-progress.
     if (!this._isAnimating) {
       return;
-    }
-
-    const isFirstStep = this._currentTime === 0;
-    if (isFirstStep) {
-      this._currentTime = timestamp;
     }
 
     let deltaTime = timestamp - this._currentTime;
