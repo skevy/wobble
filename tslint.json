@@ -22,6 +22,7 @@
       true,
       "dev"
     ],
+    "no-submodule-imports": false,
     "object-literal-sort-keys": false,
     "prettier": true,
     "prefer-conditional-expression": false,
