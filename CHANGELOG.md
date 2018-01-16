@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### v1.4.0
+
+- Remove Flow, rewrite in TypeScript ([a85aa77](https://github.com/skevy/wobble/commit/a85aa771843ec9a9ddf7d3d187dc4c2e5ff5a1b6))
+
 ### v1.3.1
 
 - Fix types for chainable methods ([bd7b496](https://github.com/skevy/wobble/commit/bd7b49622805b9bc218c87017ea92d3cb35d623f))
