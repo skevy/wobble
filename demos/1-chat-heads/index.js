@@ -5,7 +5,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import { Spring } from "wobble/dist/wobble.es";
+import { Spring } from "wobble";
 
 // $FlowFixMe
 import * as images from "./*.jpg";
