@@ -83,7 +83,7 @@ export class Spring {
       if (!this._currentAnimationStep) {
         this._notifyListeners("onStart");
         this._currentAnimationStep = requestAnimationFrame((t: number) => {
-          this._step(t);
+          this._step(Date.now());
         });
       }
     }
@@ -154,7 +154,7 @@ export class Spring {
     // being changed in `updatedConfig`, we run the simulation with `_step()`
     // and default `fromValue` and `initialVelocity` to their current values.
 
-    this._advanceSpringToTime(performance.now());
+    this._advanceSpringToTime(Date.now());
 
     const baseConfig = {
       fromValue: this._currentValue,
@@ -221,7 +221,7 @@ export class Spring {
   }
 
   _reset() {
-    this._currentTime = performance.now();
+    this._currentTime = Date.now();
     this._springTime = 0.0;
     this._currentValue = this._config.fromValue;
     this._currentVelocity = this._config.initialVelocity;
@@ -248,7 +248,7 @@ export class Spring {
     // `_advanceSpringToTime()`
     if (this._isAnimating) {
       this._currentAnimationStep = requestAnimationFrame((t: number) =>
-        this._step(t)
+        this._step(Date.now())
       );
     }
   }
