@@ -2,17 +2,19 @@
 
 ### v1.3.0
 
-- Update TypeScript definition with chainable API (0c9bb96)
-- Add README (4656acf)
-- Deploy demos to wobble-demos.now.sh (4172c9c)
-- Set _currentValue + _currentVelocity in constructor (6112980)
-- Add "chat heads" demo (5189aea)
-- Use `Date.now()` instead of `performance.now()` for React Native compatibility (34d9a0f)
-- Make `this._currentTime` always equal to "now", remove "first step" calculation (4589723)
-- Make all APIs chainable (b89559f)
-- Set default `toValue` to 1. (c0fb41a)
-- Move @flow annotations + fix comments (058c75d)
-- Remove "browser" field from package.json (261cca3)
+- Update TypeScript definition with chainable API ([0c9bb96](https://github.com/skevy/wobble/commit/0c9bb96eb66c716d4d3b057bb366d593ea9bc79e))
+- Add README ([4656acf](https://github.com/skevy/wobble/commit/4656acf67f1a892ac81a1684d6516384eb900cd3
+))
+- Deploy demos to wobble-demos.now.sh ([4172c9c](https://github.com/skevy/wobble/commit/4172c9c13aa6877a7f3951c201ca33a4e3e37856
+))
+- Set _currentValue + _currentVelocity in constructor ([6112980](https://github.com/skevy/wobble/commit/61129802df8b2536264ceff46823e5e3911e9eef))
+- Add "chat heads" demo ([5189aea](https://github.com/skevy/wobble/commit/5189aea291131816fd80dc834fac2885a72e58b1))
+- Use `Date.now()` instead of `performance.now()` for React Native compatibility ([34d9a0f](https://github.com/skevy/wobble/commit/34d9a0fe6ef3ac24630c8524a0ac1229ed09fc08))
+- Make `this._currentTime` always equal to "now", remove "first step" calculation ([4589723](https://github.com/skevy/wobble/commit/45897231dd8683f4e820d2030956fe34cb4866ee))
+- Make all APIs chainable ([b89559f](https://github.com/skevy/wobble/commit/b89559fb6e83314098a673461d2225369f170d81))
+- Set default `toValue` to 1. ([c0fb41a](https://github.com/skevy/wobble/commit/c0fb41a3d17f30fb1c5298cc3c2aa20af7fe55a8))
+- Move @flow annotations + fix comments ([058c75d](https://github.com/skevy/wobble/commit/058c75d934a36c0e2a8f5dd5f34d5854ce664124))
+- Remove "browser" field from package.json ([261cca3](https://github.com/skevy/wobble/commit/261cca3237837cf2650a9441fe1406bc41a37b73))
 
 ### v1.2.0
 
