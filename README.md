@@ -41,9 +41,19 @@ The full proof can be found [in this PDF](http://planetmath.org/sites/default/fi
 
 Wobble demos are located here: [https://wobble-demos.now.sh/](https://wobble-demos.now.sh/). Send PRs to add more!
 
+# Getting Started
+
+```bash
+yarn add wobble
+# or
+npm install --save wobble
+```
+
 # Usage
 
 ```jsx
+import { Spring } from 'wobble';
+
 // Create a new spring
 const spring = new Spring({
   toValue: 100,
