@@ -3,24 +3,34 @@
  *
  *  Use of this source code is governed by a MIT-style license that can be found
  *  in the LICENSE file or at https://opensource.org/licenses/MIT.
+ *  
+ *  @flow
  */
-// @flow
 
+import lolex from "lolex";
 import { Spring } from "../";
+
+let clock;
 
 describe("Spring", () => {
   it("animates correctly with base values", () => {
+    const clock = lolex.install();
+
     const spring = new Spring({
       fromValue: 0,
       toValue: 1
     });
 
-    const { values, velocities } = _measureSpringDynamics(spring, 80);
+    const { values, velocities } = _measureSpringDynamics(clock, spring, 80);
     expect(values).toMatchSnapshot();
     expect(velocities).toMatchSnapshot();
+
+    clock.uninstall();
   });
 
   it("animates correctly with non-zero initialVelocity", () => {
+    const clock = lolex.install();
+
     const spring = new Spring({
       fromValue: 10,
       toValue: 100,
@@ -30,16 +40,20 @@ describe("Spring", () => {
       initialVelocity: 2
     });
 
-    const { values, velocities } = _measureSpringDynamics(spring, 80);
+    const { values, velocities } = _measureSpringDynamics(clock, spring, 80);
 
     expect(velocities[0]).toBe(2);
     expect(velocities[values.length - 1]).toBe(0);
 
     expect(values).toMatchSnapshot();
     expect(velocities).toMatchSnapshot();
+
+    clock.uninstall();
   });
 
   it("animates correctly with non-zero fromValue", () => {
+    const clock = lolex.install();
+
     const spring = new Spring({
       fromValue: 25,
       toValue: 50,
@@ -48,16 +62,20 @@ describe("Spring", () => {
       mass: 1
     });
 
-    const { values, velocities } = _measureSpringDynamics(spring, 60);
+    const { values, velocities } = _measureSpringDynamics(clock, spring, 60);
 
     expect(values[0]).toBe(25);
     expect(values[values.length - 1]).toBe(50);
 
     expect(values).toMatchSnapshot();
     expect(velocities).toMatchSnapshot();
+
+    clock.uninstall();
   });
 
   it("animates correctly with fromValue that's larger than toValue", () => {
+    const clock = lolex.install();
+
     const spring = new Spring({
       fromValue: 200,
       toValue: 11,
@@ -66,16 +84,22 @@ describe("Spring", () => {
       mass: 1
     });
 
-    const { values, velocities } = _measureSpringDynamics(spring, 60);
+    const { values, velocities } = _measureSpringDynamics(clock, spring, 60);
 
     expect(values[0]).toBe(200);
     expect(values[values.length - 1]).toBe(11);
 
     expect(values).toMatchSnapshot();
     expect(velocities).toMatchSnapshot();
+
+    clock.uninstall();
   });
 
   it("keeps proper dynamics when the config is updated during the animation", () => {
+    const clock = lolex.install({
+      global: global
+    });
+
     const spring = new Spring({
       fromValue: 25,
       toValue: 131,
@@ -87,18 +111,18 @@ describe("Spring", () => {
     const {
       values: expectedValues,
       velocities: expectedVelocities
-    } = _measureSpringDynamics(spring, 60);
+    } = _measureSpringDynamics(clock, spring, 60);
 
     // Just run spring for 10 frames...we don't care about its
     // values/velocities -- other tests cover this
-    _measureSpringDynamics(spring, 10);
+    _measureSpringDynamics(clock, spring, 10);
 
     spring.updateConfig({}); // don't change anything
 
     const {
       values: valuesAfterUpdate,
       velocities: velocitiesAfterUpdate
-    } = _measureSpringDynamics(spring, 60);
+    } = _measureSpringDynamics(clock, spring, 60);
 
     // Get the expected values/velocities after 10 frames
     const expectedValuesAfterUpdate = expectedValues.slice(10);
@@ -110,9 +134,13 @@ describe("Spring", () => {
     velocitiesAfterUpdate.forEach((vel, i) => {
       expect(vel).toBeCloseTo(expectedVelocitiesAfterUpdate[i], 0.00000001);
     });
+
+    clock.uninstall();
   });
 
   it("respects toValue being updated mid-animation", () => {
+    const clock = lolex.install();
+
     const spring = new Spring({
       fromValue: 25,
       toValue: 131,
@@ -124,10 +152,10 @@ describe("Spring", () => {
     const {
       values: expectedValues,
       velocities: expectedVelocities
-    } = _measureSpringDynamics(spring, 60);
+    } = _measureSpringDynamics(clock, spring, 60);
 
     // Just run spring for 5 frames
-    _measureSpringDynamics(spring, 5);
+    _measureSpringDynamics(clock, spring, 5);
 
     spring.updateConfig({
       toValue: 200,
@@ -138,14 +166,18 @@ describe("Spring", () => {
     const {
       values: valuesAfterUpdate,
       velocities: velocitiesAfterUpdate
-    } = _measureSpringDynamics(spring, 60);
+    } = _measureSpringDynamics(clock, spring, 60);
 
     // Expect spring to be at rest with new values
     expect(valuesAfterUpdate[valuesAfterUpdate.length - 1]).toBe(200);
     expect(velocitiesAfterUpdate[velocitiesAfterUpdate.length - 1]).toBe(0);
+
+    clock.uninstall();
   });
 
   it("respects initialVelocity being updated mid-animation", () => {
+    const clock = lolex.install();
+
     const spring = new Spring({
       fromValue: 25,
       toValue: 131,
@@ -157,10 +189,10 @@ describe("Spring", () => {
     const {
       values: expectedValues,
       velocities: expectedVelocities
-    } = _measureSpringDynamics(spring, 60);
+    } = _measureSpringDynamics(clock, spring, 60);
 
     // Just run spring for 10 frames
-    _measureSpringDynamics(spring, 10);
+    _measureSpringDynamics(clock, spring, 10);
 
     spring.updateConfig({
       initialVelocity: 200
@@ -170,13 +202,15 @@ describe("Spring", () => {
     const {
       values: valuesAfterUpdate,
       velocities: velocitiesAfterUpdate
-    } = _measureSpringDynamics(spring, 60);
+    } = _measureSpringDynamics(clock, spring, 60);
 
     // Expect spring to be at rest with new values
     expect(valuesAfterUpdate[0]).toBe(expectedValues[10]); // first frame should be the same position as ending frame
     expect(valuesAfterUpdate[1]).toBeGreaterThan(2000); // should go to a really high number
     expect(velocitiesAfterUpdate[0]).toBe(200);
     expect(velocitiesAfterUpdate[8]).toBeLessThan(0); // given the spring dynamics, v should go negative pretty quickly
+
+    clock.uninstall();
   });
 
   it("removes existing listener", () => {
@@ -211,6 +245,7 @@ describe("Spring", () => {
   });
 
   it("synchronously notifies listeners that the spring has stopped when .stop() is called mid-animation", () => {
+    const clock = lolex.install();
     const onStopListener = jest.fn();
 
     const spring = new Spring({
@@ -224,18 +259,21 @@ describe("Spring", () => {
       })
       .start();
 
-    jest.runTimersToTime(1000 / 60 * 10);
+    clock.tick(1000 / 60 * 10);
 
     spring.stop();
     expect(onStopListener).toHaveBeenCalledWith(spring);
     expect(spring.isAtRest).toBeFalsy();
 
-    jest.runTimersToTime(1000 / 60 * 1);
+    clock.tick(1000 / 60 * 1);
 
     expect(onStopListener).toHaveBeenCalledTimes(1);
+
+    clock.uninstall();
   });
 
   it("should only call onUpdate once per frame", () => {
+    const clock = lolex.install();
     const onUpdateListener = jest.fn();
     const onStopListener = jest.fn();
 
@@ -249,13 +287,16 @@ describe("Spring", () => {
 
     expect(onUpdateListener).not.toHaveBeenCalled();
 
-    jest.runTimersToTime(1000 / 60);
+    clock.tick(1000 / 60);
 
     expect(onUpdateListener).toHaveBeenCalledTimes(1);
     expect(onStopListener).not.toHaveBeenCalled();
+
+    clock.uninstall();
   });
 
   it("should call onStop on the next frame if fromValue and toValue are updated to match during the animation", () => {
+    const clock = lolex.install();
     const onStopListener = jest.fn();
 
     const spring = new Spring({ fromValue: 0, toValue: 1 });
@@ -263,17 +304,23 @@ describe("Spring", () => {
 
     spring.start();
 
-    jest.runTimersToTime(1000 / 60);
+    clock.tick(1000 / 60);
     spring.updateConfig({ fromValue: 1, initialVelocity: 0 });
     expect(onStopListener).not.toHaveBeenCalled();
 
-    jest.runTimersToTime(1000 / 60);
+    clock.tick(1000 / 60);
     expect(onStopListener).toHaveBeenCalled();
+
+    clock.uninstall();
   });
 
-  function _measureSpringDynamics(spring: Spring, numFrames: number) {
-    const values = [];
-    const velocities = [];
+  function _measureSpringDynamics(
+    clock: any,
+    spring: Spring,
+    numFrames: number
+  ) {
+    const values = [spring.currentValue];
+    const velocities = [spring.currentVelocity];
 
     spring
       .onUpdate(spring => {
@@ -282,7 +329,7 @@ describe("Spring", () => {
       })
       .start();
 
-    jest.runTimersToTime(1000 / 60 * numFrames + 1); // add an extra ms to fix any rounding errors
+    clock.tick(Math.round(1000 / 60.0 * numFrames / 16) * 16); // round to the nearest frame
 
     spring.removeAllListeners();
 
