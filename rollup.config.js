@@ -1,7 +1,6 @@
 // rollup.config.js
 import resolve from "rollup-plugin-node-resolve";
 import commonjs from "rollup-plugin-commonjs";
-import babel from "rollup-plugin-babel";
 import typescript from "rollup-plugin-typescript2";
 import uglify from "rollup-plugin-uglify";
 import { minify } from "uglify-es";
@@ -31,23 +30,6 @@ const browser = Object.assign({}, base, {
       typescript: require("typescript"),
     }),
     commonjs(),
-    babel({
-      exclude: "node_modules/**", // only transpile our source code
-      babelrc: false,
-      presets: [
-        [
-          "env",
-          {
-            targets: {
-              browsers: ["last 2 versions", "safari >= 7"]
-            },
-            modules: false
-          }
-        ],
-        "stage-0"
-      ],
-      plugins: ["external-helpers"]
-    }),
     uglify({}, minify)
   ]
 });
@@ -63,29 +45,13 @@ const es = Object.assign({}, base, {
       cacheRoot: CACHE_ROOT,
       tsconfigOverride: {
         compilerOptions: {
+          module: 'esnext',
           declaration: false,
         }
       },
       typescript: require("typescript"),
     }),
     commonjs(),
-    babel({
-      exclude: "node_modules/**", // only transpile our source code
-      babelrc: false,
-      presets: [
-        [
-          "env",
-          {
-            targets: {
-              node: true
-            },
-            modules: false
-          }
-        ],
-        "stage-0"
-      ],
-      plugins: ["external-helpers"]
-    }),
     uglify({}, minify)
   ]
 });

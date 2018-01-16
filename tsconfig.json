@@ -7,7 +7,11 @@
     "noImplicitThis": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
-    "target": "esnext",
+    "lib": [
+      "dom",
+      "esnext"
+    ],
+    "target": "es5",
     "pretty": true,
     "declaration": true,
     "outDir": "./dist/module"
