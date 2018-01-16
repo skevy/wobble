@@ -2,6 +2,7 @@
 
 ### v1.3.0
 
+- Update TypeScript definition with chainable API (0c9bb96)
 - Add README (4656acf)
 - Deploy demos to wobble-demos.now.sh (4172c9c)
 - Set _currentValue + _currentVelocity in constructor (6112980)
