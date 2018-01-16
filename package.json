@@ -20,7 +20,7 @@
     "dist-cjs": "ROLLUP_CONFIG=browser rollup -c --format cjs --output dist/wobble.cjs.js",
     "dist-browser": "ROLLUP_CONFIG=browser rollup -c --format iife --output dist/wobble.browser.js",
     "dist": "yarn run clean; concurrently \"yarn dist-src\" \"yarn dist-es\" \"yarn dist-cjs\" \"yarn dist-browser\"",
-    "prepublish": "yarn run dist",
+    "prepublish": "yarn dist",
     "precommit": "lint-staged"
   },
   "files": [
