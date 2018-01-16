@@ -55,7 +55,7 @@
   },
   "lint-staged": {
     "**/*.+(ts|tsx)": [
-      "tslint"
+      "tslint --format codeFrame"
     ]
   },
   "devDependencies": {
