@@ -67,6 +67,8 @@ export class Spring {
         0.001
       )
     };
+    this._currentValue = this._config.fromValue;
+    this._currentVelocity = this._config.initialVelocity;
   }
 
   /**
