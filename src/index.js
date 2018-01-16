@@ -54,7 +54,7 @@ export class Spring {
   constructor(config: PartialSpringConfig = {}) {
     this._config = {
       fromValue: withDefault(config.fromValue, 0),
-      toValue: withDefault(config.toValue, 0),
+      toValue: withDefault(config.toValue, 1),
       stiffness: withDefault(config.stiffness, 100),
       damping: withDefault(config.damping, 10),
       mass: withDefault(config.mass, 1),
