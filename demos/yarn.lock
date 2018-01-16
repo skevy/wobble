@@ -2482,6 +2482,10 @@ normalize-url@^1.4.0:
     query-string "^4.1.0"
     sort-keys "^1.0.0"
 
+now@^9.1.0:
+  version "9.1.0"
+  resolved "https://registry.yarnpkg.com/now/-/now-9.1.0.tgz#b13feae859311fd3d4d0f084e02a1a67680c7116"
+
 npmlog@^4.0.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/npmlog/-/npmlog-4.1.2.tgz#08a7f2a8bf734604779a9efa4ad5cc717abb954b"
@@ -3749,7 +3753,7 @@ window-size@0.1.0:
   resolved "https://registry.yarnpkg.com/window-size/-/window-size-0.1.0.tgz#5438cd2ea93b202efa3a19fe8887aee7c94f9c9d"
 
 "wobble@link:..":
-  version "1.2.0"
+  version "1.3.0"
 
 wordwrap@0.0.2:
   version "0.0.2"
