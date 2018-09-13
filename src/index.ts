@@ -19,6 +19,7 @@ export interface SpringConfig {
   overshootClamping: boolean; // False when overshooting is allowed, true when it is not. Defaults to false.
   restVelocityThreshold: number; // When spring's velocity is below `restVelocityThreshold`, it is at rest. Defaults to .001.
   restDisplacementThreshold: number; // When the spring's displacement (current value) is below `restDisplacementThreshold`, it is at rest. Defaults to .001.
+  raf: boolean;
   [index: string]: any;
 }
 
@@ -62,6 +63,7 @@ export class Spring {
       initialVelocity: withDefault(config.initialVelocity, 0),
       overshootClamping: withDefault(config.overshootClamping, false),
       allowsOverdamping: withDefault(config.allowsOverdamping, false),
+      raf: withDefault(config.raf, true),
       restVelocityThreshold: withDefault(config.restVelocityThreshold, 0.001),
       restDisplacementThreshold: withDefault(
         config.restDisplacementThreshold,
@@ -85,9 +87,11 @@ export class Spring {
 
       if (!this._currentAnimationStep) {
         this._notifyListeners("onStart");
-        this._currentAnimationStep = requestAnimationFrame((t: number) => {
-          this._step(Date.now());
-        });
+        if (this._config.raf) {
+          this._currentAnimationStep = requestAnimationFrame((t: number) => {
+            this._step();
+          });
+        }
       }
     }
 
@@ -157,7 +161,7 @@ export class Spring {
     // being changed in `updatedConfig`, we run the simulation with `_step()`
     // and default `fromValue` and `initialVelocity` to their current values.
 
-    this._advanceSpringToTime(Date.now());
+    this._advanceSpringToTime();
 
     this._config.fromValue = this._currentValue;
     this._config.initialVelocity = this._currentVelocity;
@@ -170,6 +174,18 @@ export class Spring {
 
     this._reset();
 
+    return this;
+  }
+
+  /**
+   *
+   */
+  setValue(value: number): this {
+    this._config.fromValue = this._currentValue;
+    this._config.toValue = value;
+    this._config.initialVelocity = this._currentVelocity;
+    this.start();
+    this._advanceSpringToTime(undefined, true);
     return this;
   }
 
@@ -245,20 +261,20 @@ export class Spring {
    * current state once per frame, and schedules the next frame if the spring is
    * not yet at rest.
    */
-  private _step(timestamp: number) {
-    this._advanceSpringToTime(timestamp, true);
+  private _step() {
+    this._advanceSpringToTime(undefined, true);
 
     // check `_isAnimating`, in case `stop()` got called during
     // `_advanceSpringToTime()`
-    if (this._isAnimating) {
+    if (this._config.raf && this._isAnimating) {
       this._currentAnimationStep = requestAnimationFrame((t: number) =>
-        this._step(Date.now())
+        this._step()
       );
     }
   }
 
   private _advanceSpringToTime(
-    timestamp: number,
+    timestamp: number = Date.now(),
     shouldNotifyListeners: boolean = false
   ) {
     // `_advanceSpringToTime` updates `_currentTime` and triggers the listeners.
