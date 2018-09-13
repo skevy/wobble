@@ -19,6 +19,7 @@ export interface SpringConfig {
   overshootClamping: boolean; // False when overshooting is allowed, true when it is not. Defaults to false.
   restVelocityThreshold: number; // When spring's velocity is below `restVelocityThreshold`, it is at rest. Defaults to .001.
   restDisplacementThreshold: number; // When the spring's displacement (current value) is below `restDisplacementThreshold`, it is at rest. Defaults to .001.
+  [index: string]: any;
 }
 
 export type PartialSpringConfig = Partial<SpringConfig>;
@@ -158,16 +159,14 @@ export class Spring {
 
     this._advanceSpringToTime(Date.now());
 
-    const baseConfig = {
-      fromValue: this._currentValue,
-      initialVelocity: this._currentVelocity
-    };
+    this._config.fromValue = this._currentValue;
+    this._config.initialVelocity = this._currentVelocity;
 
-    this._config = {
-      ...this._config,
-      ...baseConfig,
-      ...updatedConfig
-    };
+    for (const key in updatedConfig) {
+      if (this._config.hasOwnProperty(key)) {
+        this._config[key] = updatedConfig[key as keyof SpringConfig];
+      }
+    }
 
     this._reset();
 
