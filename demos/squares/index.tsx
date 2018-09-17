@@ -9,14 +9,28 @@ class Square {
     this.x = x
     this.y = y
     this.color = '#'+Math.random().toString(16).substr(2,6)
+
+    // raf
+    //this.springs = {
+      //x: new Spring({fromValue: this.x}), // x
+      //y: new Spring({fromValue: this.y})  // y
+    //}
+
+    // no raf
     this.springs = {
       x: new Spring({fromValue: this.x, raf: false}), // x
       y: new Spring({fromValue: this.y, raf: false})  // y
     }
+
     this.springs.x.onUpdate(s => this.x = s.currentValue)
     this.springs.y.onUpdate(s => this.y = s.currentValue)
   }
   setPosition(x, y) {
+    // raf
+    //this.springs.x.updateConfig({toValue: x}).start()
+    //this.springs.y.updateConfig({toValue: y}).start()
+
+    // no raf
     this.springs.x.setValue(x);
     this.springs.y.setValue(y);
   }
@@ -64,7 +78,10 @@ class Renderer {
 
     for(var i = 0; i < squares.length; i++) {
       const square = squares[i]
+
+      // with no raf, have to manually advance simulation. comment out if using raf
       square.tick(now)
+
       ctx.fillStyle = square.color
       ctx.fillRect(square.x, square.y, 10, 10)
     }
