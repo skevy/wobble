@@ -1,22 +1,13 @@
+'use strict'
+
 import { Spring } from "../../dist/module"
 
 
-const COUNT = 50
-const squares = []
-
-const canvas = document.createElement('canvas')
-const ctx = canvas.getContext('2d')
-
-canvas.style.width = canvas.style.height = '100%'
-document.body.appendChild(canvas)
-resizeCanvasToDisplaySize(canvas)
-
-
 class Square {
-  constructor(i) {
+  constructor(i, x, y) {
     this.i = i
-    this.x = Math.random() * canvas.width
-    this.y = Math.random() * canvas.height
+    this.x = x
+    this.y = y
     this.color = '#'+Math.random().toString(16).substr(2,6)
     this.springs = {
       x: new Spring({fromValue: this.x, raf: false}), // x
@@ -37,6 +28,52 @@ class Square {
   }
 }
 
+class Renderer {
+  constructor() {
+
+    const COUNT = 1000
+    const canvas = document.createElement('canvas')
+    const squares = []
+
+    canvas.style.width = canvas.style.height = '100%'
+    document.body.appendChild(canvas)
+    resizeCanvasToDisplaySize(canvas)
+
+    for(var i = 0; i < COUNT; i++) {
+      squares.push(new Square(i, Math.random() * canvas.width, Math.random() * canvas.height))
+    }
+
+    this.squares = squares
+    this.canvas = canvas
+    this.ctx = canvas.getContext('2d')
+
+  }
+
+  draw = () => {
+    const now = Date.now()
+    const {canvas, squares, ctx} = this
+
+    resizeCanvasToDisplaySize(canvas)
+
+    const {width, height} = canvas
+
+    ctx.clearRect(0, 0, width, height)
+
+    const index = Math.floor(squares.length*Math.random())
+    squares[index].setPosition(Math.random() * canvas.width, Math.random() * canvas.height)
+
+    for(var i = 0; i < squares.length; i++) {
+      const square = squares[i]
+      square.tick(now)
+      ctx.fillStyle = square.color
+      ctx.fillRect(square.x, square.y, 10, 10)
+    }
+
+    requestAnimationFrame(this.draw)
+  }
+
+}
+
 function resizeCanvasToDisplaySize(canvas) {
   let w = (canvas.clientWidth*devicePixelRatio) | 0
   let h = (canvas.clientHeight*devicePixelRatio) | 0
@@ -46,34 +83,5 @@ function resizeCanvasToDisplaySize(canvas) {
   }
 }
 
-function draw() {
-  const now = Date.now()
-  resizeCanvasToDisplaySize(canvas)
-  const width = canvas.width
-  const height = canvas.height
-  ctx.clearRect(0, 0, width, height)
-  for(var i = 0; i < squares.length; i++) {
-    const square = squares[i]
-    square.tick(now)
-    ctx.fillStyle = square.color
-    ctx.fillRect(square.x, square.y, 50, 50)
-  }
-  requestAnimationFrame(draw)
-}
-
-setInterval(() => {
-  randomize()
-}, 100)
-
-function randomize() {
-  squares[Math.floor(squares.length*Math.random())]
-    .setPosition(Math.random() * canvas.width, Math.random() * canvas.height)
-}
-
-for(var i = 0; i < COUNT; i++) {
-  squares.push(new Square(i))
-}
-
-draw()
-
-window.randomize = randomize
+const renderer = new Renderer()
+renderer.draw()
