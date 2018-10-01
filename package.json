@@ -23,8 +23,7 @@
     "precommit": "lint-staged"
   },
   "files": [
-    "dist",
-    "wobble.d.ts"
+    "dist"
   ],
   "jest": {
     "globals": {
