@@ -6,7 +6,7 @@ import { minify } from "uglify-es";
 
 const base = {
   input: "src/index.ts",
-  plugins: [resolve()]
+  plugins: [resolve()],
 };
 
 const CACHE_ROOT = `${require("temp-dir")}/.rpt2_cache_${process.env
@@ -18,7 +18,7 @@ const browser = {
     name: "Wobble",
     format: "iife",
     file: "./dist/wobble.browser.js",
-    sourcemap: true
+    sourcemap: true,
   },
   plugins: [
     ...base.plugins,
@@ -27,7 +27,7 @@ const browser = {
       tsconfigOverride: {
         compilerOptions: {
           declaration: false,
-        }
+        },
       },
       typescript: require("typescript"),
     }),
@@ -57,8 +57,9 @@ const es = {
       tsconfigOverride: {
         compilerOptions: {
           module: "esnext",
+          target: "ES2017",
           declaration: false,
-        }
+        },
       },
       typescript: require("typescript"),
     }),
@@ -94,7 +95,7 @@ function addMinifier(config) {
     },
     plugins: [
       ...config.plugins,
-      uglify({}, minify)
-    ]
+      uglify({}, minify),
+    ],
   };
 }
