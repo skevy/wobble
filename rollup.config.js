@@ -1,6 +1,5 @@
 // rollup.config.js
 import resolve from "rollup-plugin-node-resolve";
-import commonjs from "rollup-plugin-commonjs";
 import typescript from "rollup-plugin-typescript2";
 import uglify from "rollup-plugin-uglify";
 import { minify } from "uglify-es";
@@ -13,9 +12,12 @@ const base = {
 const CACHE_ROOT = `${require("temp-dir")}/.rpt2_cache_${process.env
   .ROLLUP_CONFIG}`;
 
-const browser = Object.assign({}, base, {
+const browser = {
+  ...base,
   output: {
     name: "Wobble",
+    format: "iife",
+    file: "./dist/wobble.browser.js",
     sourcemap: true
   },
   plugins: [
@@ -29,14 +31,23 @@ const browser = Object.assign({}, base, {
       },
       typescript: require("typescript"),
     }),
-    commonjs(),
-    uglify({}, minify)
   ]
-});
+};
 
-const es = Object.assign({}, base, {
+const cjs = {
+  ...browser,
+  output: {
+    ...browser.output,
+    format: "cjs",
+    file: browser.output.file.replace("browser", "cjs"),
+  },
+};
+
+const es = {
+  ...base,
   output: {
     format: "es",
+    file: "./dist/wobble.es.js",
     sourcemap: true
   },
   plugins: [
@@ -45,20 +56,20 @@ const es = Object.assign({}, base, {
       cacheRoot: CACHE_ROOT,
       tsconfigOverride: {
         compilerOptions: {
-          module: 'esnext',
+          module: "esnext",
           declaration: false,
         }
       },
       typescript: require("typescript"),
     }),
-    commonjs(),
-    uglify({}, minify)
   ]
-});
+};
 
 let config;
 switch (process.env.ROLLUP_CONFIG) {
   case "cjs":
+    config = cjs;
+    break;
   case "browser":
     config = browser;
     break;
@@ -69,4 +80,21 @@ switch (process.env.ROLLUP_CONFIG) {
     throw new Error("Must set ROLLUP_CONFIG");
 }
 
-export default config;
+export default [
+  config,
+  addMinifier(config),
+];
+
+function addMinifier(config) {
+  return {
+    ...config,
+    output: {
+      ...config.output,
+      file: config.output.file.replace(".js", ".min.js"),
+    },
+    plugins: [
+      ...config.plugins,
+      uglify({}, minify)
+    ]
+  };
+}
