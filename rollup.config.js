@@ -57,6 +57,7 @@ const es = {
       tsconfigOverride: {
         compilerOptions: {
           module: "esnext",
+          target: "ES2017",
           declaration: false,
         }
       },
