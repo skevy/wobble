@@ -4,3 +4,4 @@ build
 *.log
 coverage
 demos/.cache
+.DS_Store
