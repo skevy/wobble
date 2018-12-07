@@ -309,6 +309,12 @@ describe("Spring", () => {
     clock.uninstall();
   });
 
+
+  it("reports failures in CircleCI", () => {
+    expect("nope").toEqual(5);
+  });
+
+
   function _measureSpringDynamics(
     clock: any,
     spring: Spring,
