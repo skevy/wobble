@@ -1,7 +1,11 @@
 ![repo-banner](./assets/wobble-logo.png)
 
-[![Build Status](https://img.shields.io/circleci/project/github/skevy/wobble/develop.svg)](https://circleci.com/gh/skevy/wobble/)
-[![codecov](https://codecov.io/gh/skevy/wobble/branch/develop/graph/badge.svg)](https://codecov.io/gh/skevy/wobble)
+[![Current version:](https://img.shields.io/badge/v1.5.1:-222222.svg?logo=npm)](https://www.npmjs.com/package/wobble/v/1.5.1)
+[![Test status](https://img.shields.io/circleci/project/github/skevy/wobble/stable.svg?logo=circleci&label=Tests)](https://circleci.com/gh/skevy/wobble/133)
+[![Code coverage](https://img.shields.io/codecov/c/github/skevy/wobble/stable.svg?logo=codecov&logoColor=white&label=Coverage)](https://codecov.io/gh/skevy/wobble/tree/81d48aa583e633fef9da5d0050002b7438a1eb4d/src)<br />
+[![HEAD:](https://img.shields.io/badge/HEAD:-222222.svg?logo=github&logoColor=white)](https://github.com/skevy/wobble)
+[![Test status](https://img.shields.io/circleci/project/github/skevy/wobble/develop.svg?logo=circleci&label=Tests)](https://circleci.com/gh/skevy/wobble/tree/develop)
+[![Code coverage](https://img.shields.io/codecov/c/github/skevy/wobble/develop.svg?logo=codecov&logoColor=white&label=Coverage)](https://codecov.io/gh/skevy/wobble/branch/develop)
 
 A tiny (~1.7 KB gzipped) spring physics micro-library that models a [damped harmonic oscillator](https://en.wikipedia.org/wiki/Harmonic_oscillator#Damped_harmonic_oscillator).
 
