@@ -1,5 +1,10 @@
 # CHANGELOG
 
+### v1.5.1
+
+- Distribute unminified bundles by default - minified versions are available at `/dist/wobble.${MODULE_FORMAT}.min.js` ([af82dda](https://github.com/skevy/wobble/commit/af82dda29eae11741efd380fcde5a1e7542f759d))
+- Add `typescript:main` field to `package.json`, which points to the raw TypeScript source ([0198d63](https://github.com/skevy/wobble/commit/0198d630a4d426c9fc9bbdb1e7e9e74c28873c31))
+
 ### v1.5.0
 
 - Fixup `yarn watch` to support es module compilation ([f7dd689](https://github.com/skevy/wobble/commit/f7dd68951e0f2cd8a083706c9727b1906d3b6e03))
