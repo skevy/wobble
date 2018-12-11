@@ -5,6 +5,7 @@
   "repository": "https://github.com/skevy/wobble",
   "author": "Adam Miskiewicz <adam@sk3vy.com>",
   "license": "MIT",
+  "typescript:main": "src/index.ts",
   "main": "./dist/module/index.js",
   "module": "./dist/wobble.es.js",
   "types": "./dist/module/index.d.ts",
@@ -24,6 +25,7 @@
     "precommit": "lint-staged"
   },
   "files": [
+    "src",
     "dist"
   ],
   "jest": {
