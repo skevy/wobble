@@ -11,6 +11,8 @@ A tiny (~1.7 KB gzipped) spring physics micro-library that models a [damped harm
 
 # Why Would I Use This?
 
+Perhaps, you just really like to dance.
+
 Use _wobble_ if you need a very small and accurate damped harmonic spring simulation in your animation library or application. _wobble_ intentionally **only** provides a way to animate a scalar value according to equations governing damped harmonic motion. That's all this library will ever do -- any other functionality (integration with [insert ui library here], multi-dimensional springs, a nice API around chaining springs together, etc.) is left to the reader to implement.
 
 # Background
@@ -44,6 +46,8 @@ The full proof can be found [in this PDF](http://planetmath.org/sites/default/fi
 # Demos
 
 Wobble demos are located here: [https://wobble-demos.now.sh/](https://wobble-demos.now.sh/). Send PRs to add more!
+
+... and of course, [Our FAVORITE Demo](https://m.youtube.com/watch?v=rFdeskwbhAM)
 
 # Getting Started
 
