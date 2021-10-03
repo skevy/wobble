@@ -289,7 +289,6 @@ export class Spring {
 
     invariant(m > 0, "Mass value must be greater than 0");
     invariant(k > 0, "Stiffness value must be greater than 0");
-    invariant(c > 0, "Damping value must be greater than 0");
 
     let zeta = c / (2 * Math.sqrt(k * m)); // damping ratio (dimensionless)
     const omega0 = Math.sqrt(k / m) / 1000; // undamped angular frequency of the oscillator (rad/ms)
