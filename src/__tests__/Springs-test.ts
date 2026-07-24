@@ -208,6 +208,17 @@ describe("Spring", () => {
     clock.uninstall();
   });
 
+  it("rejects negative config values that would prevent the spring from settling", () => {
+    const clock = lolex.install();
+
+    expect(() => {
+      new Spring({ damping: -1 }).onUpdate(() => {}).start();
+      clock.tick(1000 / 60);
+    }).toThrow("Damping value must be greater than or equal to 0");
+
+    clock.uninstall();
+  });
+
   it("removes existing listener", () => {
     const spring = new Spring();
     const onUpdateListener = () => {};
